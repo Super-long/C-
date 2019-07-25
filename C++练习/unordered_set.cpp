@@ -46,5 +46,6 @@ int main()
         cout << a->ans << " " << a->str << endl;
         a++;
     }
+    mp.emplace(ll);
     return 0;
 } 
