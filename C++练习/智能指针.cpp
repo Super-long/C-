@@ -4,7 +4,9 @@
 #include<string>
 using namespace std;
 
+class StrBlobPtr;
 class StrBlob{
+    friend class StrBlobPtr;
     private:
         shared_ptr<vector<string>>ptr;
         void check(int i,const string );
@@ -34,6 +36,41 @@ void StrBlob::check(int i,const string str)
     cout << ptr.use_count() << endl;
     if(i>=ptr->size())
     throw out_of_range(str);
+}
+
+class StrBlobPtr{
+    public:
+        StrBlobPtr():curr(0){}
+        StrBlobPtr(StrBlob &a,size_t tt=0):wptr(a.ptr){}
+        string & deref() const; //解引用
+        StrBlobPtr & incr();  //进行递增
+    private:
+        size_t curr;
+        weak_ptr<vector<string>> wptr;   //防止循环引用导致内存泄露
+        shared_ptr<vector<string>> check(size_t ans,const string&)const;
+};
+
+shared_ptr<vector<string>> StrBlobPtr::check(size_t ans,const string&)const
+{
+    auto let=wptr.lock();
+    if(!let)//引用计数为零
+    throw runtime_error("引用为零");
+    else if(ans>=(*let).size())
+    throw out_of_range("越界！");
+    return let;
+}
+
+string & StrBlobPtr::deref()const  
+{
+    auto p=check(curr,"解应用指向:");
+    return (*p)[curr]; //解引用指针 返回一个字符串
+}
+
+StrBlobPtr & StrBlobPtr::incr()
+{
+    check(curr,"递增");
+    curr++;
+    return *this;
 }
 
 int main()
