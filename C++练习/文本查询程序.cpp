@@ -26,7 +26,7 @@ class TextQuery
     //friend class QueryResult;
     private:
         shared_ptr<vector<string>> ptr;
-        map<string,shared_ptr<set<size_t>>>mp;
+        map<string,shared_ptr<set<size_t>>>mp; //使用set也是为了快速检索
     public:
         TextQuery(ifstream &);
         QueryResult query(string &)const; //仅查询当然不希望修改
