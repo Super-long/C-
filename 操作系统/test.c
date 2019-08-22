@@ -14,6 +14,7 @@ int main()
     int x=2;
     while(1)
     {
+        RTLD_NOW
         handle=dlopen("./test_dy.so",RTLD_LAZY);
         if(!handle)
         {
