@@ -2,7 +2,7 @@
 #include<string>
 #include<iostream>
 using namespace std;
-
+//这也算个简易的智能指针了吧
 class Hasptr
 {
     public:
