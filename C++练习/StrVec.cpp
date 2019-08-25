@@ -44,7 +44,7 @@ StrVec::~StrVec()
 void StrVec::push_back(const string & str)
 {
     chk_n_alloc();
-    alloc.construct(first_free++,str);
+    alloc.construct(first_free++,std::move(str));//这样效率会更高
 }
 
 pair<string*,string*> 
@@ -54,6 +54,7 @@ StrVec::alloc_n_copy(const string *a,const string *b)
     auto data = alloc.allocate(b-a);
     //把a 到 b 的元素拷贝到data
     return {data,uninitialized_copy(a,b,data)};
+    //没有移动构造函数会很浪费资源
 }
 
 void StrVec::free()
@@ -70,6 +71,7 @@ void StrVec::free()
     if(elements)
     {
         for_each(elements,first_free,[](string &rhs){alloc.destroy(&rhs);});
+        //利用for_each 与 lambda　可以使代码清晰不少
         alloc.deallocate(elements,cap-elements);
     }//语义更加明显
 }
@@ -101,6 +103,7 @@ void StrVec::reallocate()
     auto elem = elements;
     for(size_t i=0;i!=size();i++){
         alloc.construct(dest++,std::move(*elem++));
+        //把左值通过move转化为右值　然后就满足移动构造函数的条件　移动后elem其中就没有值了
     }
     free();
     elements = newdata;
