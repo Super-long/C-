@@ -47,8 +47,8 @@ int main()
     char value[] = "I love zx";
     Str s(value);//对象仍旧存在　但是值已经在vector中
     vector<Str> vs;
-    vs.push_back(move(s));//左值转换成右值
-    //vs.push_back(s);
+    //vs.push_back(move(s));//左值转换成右值
+    vs.push_back(s);
     cout<<vs[0].str<<endl;
     if(s.str != NULL)
         cout<<s.str<<endl;
