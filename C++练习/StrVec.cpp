@@ -13,8 +13,11 @@ class StrVec
             elements(nullptr),first_free(nullptr),cap(nullptr){}
         StrVec(const StrVec&);
         StrVec &operator=(const StrVec &);
+        StrVec(StrVec&&) noexcept;//移动构造函数
+        StrVec &operator=(StrVec&&)noexcept;//移动赋值构造函数
         ~StrVec();
-        void push_back(const string &);
+        void push_back(const string &); //两个版本的push_back会根据参数的不同选择重载函数
+        void push_back(string &&);      //避免在参数为右值的情况下进行不必要的拷贝
         size_t size() const {return first_free-elements;}
         size_t capacity() const {return cap-elements;}
         string* begin() const {return elements;}
@@ -36,15 +39,52 @@ class StrVec
 };
 allocator<string> StrVec::alloc;//静态变量类外初始化
 
+StrVec::StrVec(StrVec&&tmp) noexcept
+:elements(tmp.elements),first_free(tmp.first_free),cap(tmp.cap)
+{
+    cout << "yidonggouzao\n";
+    tmp.first_free=tmp.elements=tmp.cap=nullptr;
+}
+
+StrVec &StrVec::operator=(StrVec&&tmp) noexcept
+{
+    cout << "yidongfuzhi\n";
+    if(this!=&tmp)//防止自赋值
+    {
+        free();
+        elements = tmp.elements;
+        first_free = tmp.first_free;
+        cap = tmp.cap;
+        tmp.cap=tmp.first_free=tmp.elements=nullptr;
+    }
+    return *this;
+}
+
+
 StrVec::~StrVec()
 {
     free();
 }
 
-void StrVec::push_back(const string & str)
+/* void StrVec::push_back(const string & str)
 {
     chk_n_alloc();
     alloc.construct(first_free++,std::move(str));//这样效率会更高
+    //以上写法不好说效率　　　　　　　　　　　　　　　　//上面是我没学函数的移动版本时写的　错误显然
+}
+ */
+
+void StrVec::push_back(const string &str)
+{
+    chk_n_alloc();
+    alloc.construct(first_free++,str);
+}
+
+//对于函数同时提供拷贝版本与移动版本　会使效率提高
+void StrVec::push_back(string &&str)
+{
+    chk_n_alloc();
+    alloc.construct(first_free++,std::move(str));
 }
 
 pair<string*,string*> 
@@ -53,7 +93,8 @@ StrVec::alloc_n_copy(const string *a,const string *b)
     //分配一段原始的内存
     auto data = alloc.allocate(b-a);
     //把a 到 b 的元素拷贝到data
-    return {data,uninitialized_copy(a,b,data)};
+    return {data,uninitialized_copy(make_move_iterator(a),make_move_iterator(b),data)};
+    //利用移动迭代器　提高效率
     //没有移动构造函数会很浪费资源
 }
 
@@ -119,5 +160,15 @@ int main()
     temp.push_back("world");
     temp.push_back("nihao");
     cout << temp.capacity() << endl;
+    //StrVec tmp=std::move(temp);
+    //StrVec tmp=temp;
+    StrVec tmp;
+    tmp = std::move(temp);
+    cout << tmp.capacity() << endl;
+    cout << temp.capacity() << endl;
     return 0;
+    //移动构造函数的优缺点到这里就很清楚了
+    //优：效率高，避免了无意义的拷贝
+    //缺：会使移后源对象进行析构函数　
+    //结论：在确保不需要等号后面的数据时　使用移动拷贝控制函数　得到效率的提升
 }
