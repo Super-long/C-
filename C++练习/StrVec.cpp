@@ -63,6 +63,7 @@ StrVec &StrVec::operator=(StrVec&&tmp) noexcept
 
 StrVec::~StrVec()
 {
+    cout << "hello\n";
     free();
 }
 
@@ -163,7 +164,8 @@ int main()
     //StrVec tmp=std::move(temp);
     //StrVec tmp=temp;
     StrVec tmp;
-    tmp = std::move(temp);
+    tmp = std::move(temp);//并没有调用析构函数
+    cout << "up\n";
     cout << tmp.capacity() << endl;
     cout << temp.capacity() << endl;
     return 0;
