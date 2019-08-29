@@ -1,10 +1,10 @@
 #include<memory>
 #include<string>
+#include<vector>
 #include<utility>
 #include<iostream>
 #include<algorithm>
 using namespace std;
-
 class Quote
 {
     public:
@@ -55,4 +55,18 @@ double Bulk_Quote::net_price(size_t n) const
     return (1-discount)*price*n;
     else 
     return n*price;
+}
+
+vector<shared_ptr<Quote>>basket;
+
+int main()
+{
+    Quote tmp("girls",10);
+    Bulk_Quote tmpa("okok",100,10,0.3);
+    basket.push_back(make_shared<Quote>(tmp));
+    basket.push_back(make_shared<Quote>(tmpa));
+    double ans=0.0;
+    for_each(basket.begin(),basket.end(),
+    [&](shared_ptr<Quote> a){ans+=a->net_price(20);});//捕获列表中的引用很关键(隐式捕获)
+    cout << ans << endl;
 }
