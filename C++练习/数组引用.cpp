@@ -7,6 +7,7 @@
 #include<memory>
 #include<cstring>
 using namespace std;
+
 template<typename T>
 int compare(const T &a,const T &b){
     cout << "one\n";

@@ -1,0 +1,102 @@
+#include<iostream>
+#include<string>
+#include<set>
+#include<map>
+#include<vector>
+#include<algorithm>
+#include<memory>
+#include<cstring>
+using namespace std;
+
+template<typename T>
+class Blob{
+    public:
+        typedef typename vector<T>::size_type size_type; //unsigned long
+        Blob();
+        Blob(initializer_list<T> il);
+        size_type size() {return data->size();}
+        bool empty(){return data->empty();}
+        void push_back(const T&t){data->push_back(t);}
+        void push_back(T &&t) {data->push_back(std::move(t));} //移动版本
+        void pop_back();
+        T& back();
+        T& operator[](size_type i);
+    private:
+        shared_ptr<vector<T>> data;
+        void check(size_type i,const string &msg) const; //给定索引 检查是否越界
+};
+
+template<typename T>
+void Blob<T>::check(size_type i,const string &msg)const
+{
+    if(i>this->size())
+    throw out_of_range(msg);//msg为抛出异常的的提示信息 使用what()成员函数返回
+}
+
+template<typename T>
+T& Blob<T>::back()
+{
+    check(0,"back on empty Blob");
+    retrun data->back();
+}
+
+template<typename T>
+T& Blob<T>::operator[](size_type i)
+{
+    check(0,"out of range");
+    return data[i];
+}
+
+template<typename T>
+void Blob<T>::pop_back()
+{
+    check(0,"pop_back on empty range");
+    return data->pop_back();
+}
+
+template<typename T>
+Blob<T>::Blob():data(make_shared<vector<T>>()){} //默认构造函数
+
+template<typename T>
+Blob<T>::Blob(initializer_list<T> il):
+data(make_shared<vector<T>>(std::move(il))){} //这样转成右值效率感觉会更高
+
+
+
+template<typename T>
+class Blobptr
+{
+    friend class Blobptr<T>;//一对一的友元关系
+    public:
+        Blobptr():curr(0){}
+        Blobptr(Blob<T> bl,size_t sz = 0):
+            wptr(bl.data),curr(sz){}
+        T& operator*() const{
+            auto p = check(curr,"error in *");
+            return (*p)[curr];
+        }
+        Blobptr& operator++();
+        Blobptr& operator--();  //类内不需要实例化
+
+    private:
+        shared_ptr<vector<T>> 
+            check(size_t ,const string&) const;
+        weak_ptr<vector<T>> wptr;
+        size_t curr; //数组中当前位置
+};
+
+template<typename T>
+Blobptr<T>& Blobptr<T>::operator++()
+{
+    Blobptr ret = *this;
+    ++*this; //这个为什么可以跑， 没有重载呀，
+    return ret;
+}
+
+template<typename T>
+Blobptr<T>& Blobptr<T>::operator--()
+{
+    Blobptr ret = *this;
+    --*this;
+    return ret;
+}
