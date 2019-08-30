@@ -10,11 +10,15 @@ using namespace std;
 
 template<typename T>
 class Blob{
-    public:
+    public:     //显示的告诉编译器作用域解析运算符解析的是类型名称(默认不是类型)
         typedef typename vector<T>::size_type size_type; //unsigned long
         Blob();
-        Blob(initializer_list<T> il);
+        Blob(initializer_list<T> il); //接收initializer_list参数
         size_type size() {return data->size();}
+
+        template<typename U> //成员模板函数  //接收迭代器
+        Blob(U a,U b):data(make_shared<vector<T>>(a,b)){}
+
         bool empty(){return data->empty();}
         void push_back(const T&t){data->push_back(t);}
         void push_back(T &&t) {data->push_back(std::move(t));} //移动版本
@@ -29,7 +33,7 @@ class Blob{
 template<typename T>
 void Blob<T>::check(size_type i,const string &msg)const
 {
-    if(i>this->size())
+    if(i>=data->size())
     throw out_of_range(msg);//msg为抛出异常的的提示信息 使用what()成员函数返回
 }
 
@@ -37,14 +41,14 @@ template<typename T>
 T& Blob<T>::back()
 {
     check(0,"back on empty Blob");
-    retrun data->back();
+    return data->back();
 }
 
 template<typename T>
 T& Blob<T>::operator[](size_type i)
 {
     check(0,"out of range");
-    return data[i];
+    return (*data)[i];  //傻了 智能指针解引用才是vecter对象
 }
 
 template<typename T>
@@ -99,4 +103,12 @@ Blobptr<T>& Blobptr<T>::operator--()
     Blobptr ret = *this;
     --*this;
     return ret;
+}
+
+int main()
+{
+    vector<int> vec={1,2,3,4};
+    Blob<int> bl(vec.begin(),vec.end());
+    bl.push_back(10);
+    cout << bl[2] << endl;
 }

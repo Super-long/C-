@@ -35,6 +35,11 @@ template<typename T,typename U> using pr = pair<T,U>;
 template<typename T> //模板静态成员的正确初始化方法
 size_t Pal<T>::st = 10;
 
+constexpr int hello()
+{
+    return int();//默认构造函数
+}
+
 int main()
 {
     Pal<int> t;
@@ -42,5 +47,6 @@ int main()
     pr<string,int> tmp;
     tmp = make_pair("hello",20);
     cout << tmp.second << endl;
+    cout << hello() << endl;
     return 0;
 }
