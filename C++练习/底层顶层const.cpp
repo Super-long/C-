@@ -14,11 +14,27 @@ int compare(const char (&p1)[m],const char (&p2)[n])
     return m+n;
 }
  */
+
+struct node{
+    int ll;
+    int ff;
+    bool operator<(node &tmp)
+    {
+        return ll < tmp.ll;
+    }
+};
+
 template<class T>
 int compare(const T &a,const T &b){ //保证值是一个常量 顶层const
     cout << "one\n";
     if(a<b) return -1;
     if(b<a) return -1;
+    return 0;
+}
+
+int compare(node &a,node &b) //显示实例化优先级高于模板
+{
+    cout << "four\n";
     return 0;
 }
 
@@ -33,7 +49,7 @@ int compare(const char (&p1)[m],const char (&p2)[n])//指明是数组
 {
     compare(aa,bb);
 } */
-
+//template//实例化声明
 int compare(char *const aa,char *const bb)//加上const与初始模板产生二义性
 {//底层const
     cout << "three\n";
@@ -57,5 +73,12 @@ int main()
     cout << compare("hello","lololo") << endl;
     compare(aa,bb); //这样默认传入的是指针 会产生二义性
     //fun(aa,bb);
+
+    node aaa,bbb;
+    compare(aaa,bbb);
+
+    vector<node> vec;
+    vec.push_back(aaa);
+    sort(vec.begin(),vec.end());
     return 0;
 }

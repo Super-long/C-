@@ -1,8 +1,10 @@
 #include<stdio.h>
 
-int x=15;
+int x; //强符号
 
-void f(void)
+int y = 15;
+
+void Judge_x(void)
 {
-    x=0;
+    x = 10;
 }
