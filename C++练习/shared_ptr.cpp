@@ -29,12 +29,13 @@ class Shared_ptr
         }
         //拷贝赋值运算符
         void operator=(const Shared_ptr& tmp_ptr){
-            Shared_ptr(std::move(tmp_ptr));//并没有什么成员　所以效率并没有什么提升　练下手
+            Shared_ptr(std::move(tmp_ptr));//并没有什么数据成员　所以效率并没有什么提升　练下手
         }
         //移动构造函数
         Shared_ptr(Shared_ptr && tmp_ptr):
         Mem_Ptr(tmp_ptr.Mem_Ptr),Ptr_Count(tmp_ptr.Ptr_Count),Del_Ptr(nullptr)
         {++*Ptr_Count;}
+
         //移动赋值运算符
         void operator=(Shared_ptr && ptr){
             Shared_ptr(std::move(ptr));
@@ -44,9 +45,9 @@ class Shared_ptr
         T& operator*(){
             return *Mem_Ptr;
         }
-/*         T* operator->(){
-            return Mem_ptr;
-        } */
+        T* operator->(){//至于为什么返回一个指针　因为Shared_ptr是一个类 类就应该返回一个成员
+            return Mem_Ptr;
+        } 
         T* get(){ //返回智能指针所保存的指针　操作危险
             return Mem_Ptr;
         }
@@ -57,7 +58,13 @@ class Shared_ptr
             return *Ptr_Count == 1;
         }
         void swap(Shared_ptr &tmp_ptr){
-            std::swap(*this,tmp_ptr);//只交换指针效率高　但是指针是类的私有成员　不应该破坏封装性　
+            //测试时使用原版本swap
+            //std::swap(*this,tmp_ptr); 这里概念还有问题　搞懂move原理以后再来
+
+            //交换指针效率更高
+            std::swap(Mem_Ptr,tmp_ptr.Mem_Ptr);
+            std::swap(Ptr_Count,tmp_ptr.Ptr_Count);
+            std::swap(Del_Ptr,tmp_ptr.Del_Ptr);
         }
         void reset(){ //当reset为空时　只是把reset的指针
             if(*Ptr_Count == 1){
@@ -111,6 +118,7 @@ class Shared_ptr
         }
 };
 
+//一个测试用的聚合类
 struct text{
     int ans;
     int weight;
@@ -124,12 +132,21 @@ void Del(text* tmp){//聚合类 text 的删除器
 //demo
 int main()
 {
+    cout << "测试基本操作\n";
     Shared_ptr<int> tmpa_ptr(new int(10));
     cout << *tmpa_ptr << endl;
     cout << tmpa_ptr.use_count() << endl;
     Shared_ptr<int> tmpb_ptr(tmpa_ptr);
     cout << *tmpb_ptr << endl;
     cout << tmpb_ptr.use_count() << endl;
+    
+    cout << "交换操作\n";
+    Shared_ptr<int> tmp_swap(new int(5));
+    cout << *tmpa_ptr << " " << *tmp_swap << endl;
+    tmpa_ptr.swap(tmp_swap);
+    cout << *tmpa_ptr << " " << *tmp_swap << endl;
+
+    cout << "测试三种参数的reset函数\n";
     tmpa_ptr.reset();
     cout << tmpa_ptr.use_count() << " " << tmpb_ptr.use_count() << endl;
 
@@ -139,8 +156,11 @@ int main()
     cout << (*tmpc_ptr).ans << " " << (*tmpc_ptr).weight << endl;
     tmpc_ptr.reset(new text({20,20}),Del);//shared_ptr删除器运行时绑定　所以使用指针存储删除器
 
+    cout << "测试get函数\n";
     text *temp_text_ptr = tmpc_ptr.get(); //此函数小心使用 会返回智能指针所维护的指针域
     cout << temp_text_ptr->ans << " " << temp_text_ptr->weight << endl;
+
+    cout << "开始析构\n";
 
     return 0;
 }
