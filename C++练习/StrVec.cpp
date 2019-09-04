@@ -22,13 +22,14 @@ class StrVec
         size_t capacity() const {return cap-elements;}
         string* begin() const {return elements;}
         string* end() const {return cap;}
-        
+        template<typename... Args> void emplace_back(Args&& ... args);
     private:
         static allocator<string> alloc;
         void chk_n_alloc(){
             if(size()==capacity())
             reallocate();//当初始分配的空间不够用时从新分配内存
         }
+
         pair<string*,string*> alloc_n_copy
         (const string *,const string *);
         void free();
@@ -45,6 +46,18 @@ StrVec::StrVec(StrVec&&tmp) noexcept
     cout << "yidonggouzao\n";
     tmp.first_free=tmp.elements=tmp.cap=nullptr;
 }
+
+//可变模板参数+完美转发　
+//这种情况下初始化列表就不可以　因为可变模板参数允许数据类型不同
+template<typename ...Args>//操作666
+void StrVec::emplace_back(Args&& ... args){
+    chk_n_alloc();
+    alloc.construct(first_free++,std::forward<Args>(args)...);
+}
+//对于emplace_back我的理解是有时效率高于push_back 在参数是左值时仍然是执行拷贝构造函数
+//emplace 至少做两次包的扩展　有效率上的损耗　但移动操作效率又高于拷贝操作
+//所以左值push_back　右值emplace_back
+//至此
 
 StrVec &StrVec::operator=(StrVec&&tmp) noexcept
 {
@@ -155,6 +168,7 @@ void StrVec::reallocate()
 
 int main()
 {
+    //shared_ptr<int>str = make_shared<int>(new int(5));
     StrVec temp;
     temp.push_back("hello");
     cout << temp.capacity() << endl;

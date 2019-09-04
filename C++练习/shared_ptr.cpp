@@ -8,6 +8,15 @@
 #include<cstring>
 using namespace std;
 
+template <typename T> class Shared_ptr;
+
+template<typename T,typename ... Args>
+inline Shared_ptr<T> 
+make_Shared(Args&& ... args){
+    return Shared_ptr<int>(std::forward<Args>(args)...);
+}
+//这里只是简单的实现而已　其中并没有涉及到内存的分配　也就使得第一个参数有点浪费
+
 template <typename T>
 class Shared_ptr
 {
@@ -132,6 +141,9 @@ void Del(text* tmp){//聚合类 text 的删除器
 //demo
 int main()
 {
+    cout << "测试make_shared:\n";
+    Shared_ptr<int> str=make_Shared<int>(new int(5));
+    cout << ": " << *str << endl;
     cout << "测试基本操作\n";
     Shared_ptr<int> tmpa_ptr(new int(10));
     cout << *tmpa_ptr << endl;

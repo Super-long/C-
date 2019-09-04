@@ -43,7 +43,7 @@ void f(const T&){
 }
 
 template<typename T>
-void gd(T && val){
+void gd(T && val){ //当你下一次看时再仔细想一遍
     vector<typename remove_reference<decltype(val)>::type> vec;
     vec.push_back(val);   //此时T的类型被推断为int& 
 }
