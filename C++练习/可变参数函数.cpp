@@ -20,7 +20,8 @@ void parse_argtype(int num, ...){
     va_list pargs;
     va_start(pargs,num);
     for(int i=0;i<num;++i){
-        E_VAR_TYPE eArgType = E_VAR_TYPE(va_arg(pargs,int)); //int不能转换为枚举变量　进行显式强制类型转换
+        E_VAR_TYPE eArgType = E_VAR_TYPE(va_arg(pargs,int));
+        //int不能转换为枚举变量　进行显式强制类型转换
         switch (eArgType)
         {
             case INT_TYPE:
@@ -64,6 +65,7 @@ void tmpa(int i, ...){ //可通过一个参数来标记大小　
 
 //绝大多数情况下可以用C++中的多态来完美替代　
 //因为可变参数函数在类型安全上并不出色　
+//不利于排错　不利于写出高质量代码　而且使用不确定参数且类型不确定的时候较少
 
 int main(){
     //IntegerVarArgFunc(1);
