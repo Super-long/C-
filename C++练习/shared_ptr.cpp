@@ -27,26 +27,30 @@ class Shared_ptr
     public:
         //默认构造函数
         Shared_ptr():Ptr_Count(nullptr),Mem_Ptr(nullptr),Del_Ptr(nullptr){}
+        
         //接收一个参数的构造函数(防止隐性转换)
-        explicit Shared_ptr(T *tmp_ptr):Mem_Ptr(tmp_ptr),Ptr_Count(new size_t(1)),Del_Ptr(nullptr){}
+        explicit Shared_ptr(T *tmp_ptr) try:
+        Mem_Ptr(tmp_ptr),Ptr_Count(new size_t(1)),Del_Ptr(nullptr)
+        {} catch(const std::bad_alloc &err) {cout << "error in new\n";}
+        
         //拷贝构造函数
-        Shared_ptr(Shared_ptr &tmp_ptr){ //模板内部可简化为类名而不需要加类型
+        Shared_ptr(Shared_ptr &tmp_ptr) noexcept(false){ //模板内部可简化为类名而不需要加类型
             Mem_Ptr = tmp_ptr.Mem_Ptr;
             Ptr_Count = tmp_ptr.Ptr_Count;
             Del_Ptr = nullptr;
             ++*Ptr_Count;
         }
         //拷贝赋值运算符
-        void operator=(const Shared_ptr& tmp_ptr){
+        void operator=(const Shared_ptr& tmp_ptr) & noexcept(false){
             Shared_ptr(std::move(tmp_ptr));//并没有什么数据成员　所以效率并没有什么提升　练下手
         }
         //移动构造函数
-        Shared_ptr(Shared_ptr && tmp_ptr):
+        Shared_ptr(Shared_ptr && tmp_ptr) noexcept:
         Mem_Ptr(tmp_ptr.Mem_Ptr),Ptr_Count(tmp_ptr.Ptr_Count),Del_Ptr(nullptr)
         {++*Ptr_Count;}
 
-        //移动赋值运算符
-        void operator=(Shared_ptr && ptr){
+        //移动赋值运算符 //强制等号左边为左值
+        void operator=(Shared_ptr && ptr) & noexcept{
             Shared_ptr(std::move(ptr));
         }
 
@@ -106,23 +110,27 @@ class Shared_ptr
             Del_Ptr = del_ptr; //定义一个删除器
         }
         ~Shared_ptr(){
-            cout << "Commen complete the destructor.\n";
+            try{
+                cout << "Commen complete the destructor.\n";
 
-            if(Mem_Ptr == nullptr && Ptr_Count == nullptr){ //防止默认构造出现对仅有delete 而无new
-                return;
-            }
+                if(Mem_Ptr == nullptr && Ptr_Count == nullptr){ //防止默认构造出现对仅有delete 而无new
+                    return;
+                }
 
-            if((*Ptr_Count) == 0){ //证明被reset了　特殊处理
-                delete Ptr_Count;
-                Ptr_Count = nullptr;
-                return;
-            }
-            --*Ptr_Count;
-            if(*Ptr_Count==0){
-                Del_Ptr ? Del_Ptr(Mem_Ptr) : delete Mem_Ptr;
-                delete Ptr_Count;
-                Ptr_Count = nullptr;
-                Mem_Ptr = nullptr;
+                if((*Ptr_Count) == 0){ //证明被reset了　特殊处理
+                    delete Ptr_Count;
+                    Ptr_Count = nullptr;
+                    return;
+                }
+                --*Ptr_Count;
+                if(*Ptr_Count==0){
+                    Del_Ptr ? Del_Ptr(Mem_Ptr) : delete Mem_Ptr;
+                    delete Ptr_Count;
+                    Ptr_Count = nullptr;
+                    Mem_Ptr = nullptr;
+                }
+            }catch(...){
+                cout << "error in delete\n";
             }
         }
 };
