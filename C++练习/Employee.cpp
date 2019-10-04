@@ -27,6 +27,7 @@ int main()
 {
     one aa;
     one bb;
+    int test(0);
     cout << aa.number << endl;
     cout << bb.number << endl;
 }
