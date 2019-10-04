@@ -19,9 +19,6 @@ one::one(const string &tmp)
     t_number=(++number);
     name=tmp;
 }
-
-one::one(const one & tmp)
-{
     t_number=(++number);
     name=tmp.name;
 }
