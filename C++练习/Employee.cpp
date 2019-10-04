@@ -6,7 +6,7 @@ class one
 {
     public:
         static int number;
-        one():t_number(++number),name("null"){}
+        one():t_number(++number),name("null"){}   
         one(const string &tmp);
         one(const one &);
     private:
