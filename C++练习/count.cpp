@@ -6,7 +6,7 @@ int main(int argc,char *argv[])
     using namespace std;
     if(argc==1)
     {
-        cerr << "Usage:" << argv[0]<<" filename\n";
+        cerr << "Usage:" << argv[0]<<" fi   lename\n";
         exit(EXIT_FAILURE);
     }
     ifstream fin;
