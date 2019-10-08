@@ -24,6 +24,7 @@ class locker{
         pthread_mutex_t m_mutex;
 };
 
+//相当于条件变量和一个互斥锁包装在一起
 class cond{
     public:
         cond(){
