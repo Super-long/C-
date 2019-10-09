@@ -48,7 +48,7 @@ m_QueueState(){//默认初始化
     }
     //typedef void* (*Temp)(void*);
     using Temp = void* (*)(void*);
-    Temp enp = (Temp)&threadpool::run;
+    Temp enp = (Temp)&threadpool::run; 
 
     for(int i=0;i<m_thread_number;++i){
         if(pthread_create(&(m_threads[i]),nullptr,enp,this) != 0){

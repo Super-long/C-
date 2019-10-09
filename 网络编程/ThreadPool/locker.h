@@ -24,7 +24,6 @@ class locker{
         pthread_mutex_t m_mutex;
 };
 
-//相当于条件变量和一个互斥锁包装在一起
 class cond{
     public:
         cond(){
@@ -43,7 +42,7 @@ class cond{
         bool signal(){
             return pthread_cond_signal(&m_cond) == 0;
         }
-        bool wait(){ //这里值得后面再看　有点不太清楚
+        bool wait(){
             int ret = pthread_cond_wait(&m_cond, &m_mutex);
             return ret == 0;
         }

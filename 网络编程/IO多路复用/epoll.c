@@ -1,5 +1,6 @@
 //测试LT与ET模式
-//显然相比之下ET事件被触发的次数少于LT 少了内核态向用户态拷贝就绪队列
+/*显然相比之下ET事件被触发的次数少于LT(epoll_wait) 少了内核态向用户态拷贝就绪队列 所以效率高了不少
+但是如果LT模式也同样等待数据全部传到呢　那不是和ET一样了？*/
 #include<stdio.h>
 #include<sys/types.h>
 #include<sys/socket.h>
@@ -75,6 +76,7 @@ void et(struct epoll_event* events,int number,int epollfd,int listenfd){
                 memset(BUF,'\0',sizeof(BUF));
                 int ret = recv(sockfd,BUF,BUFFERSIZE,0);
                 if(ret < 0){//非阻塞io会触发这两个错误　查下
+                //非阻塞可读的情况下读到空error会返回EAGAIN　　windows下的另外一个名字
                     if((errno == EAGAIN) || (errno == EWOULDBLOCK)){
                         printf("read later\n");
                         break; //证明数据已经读取完毕
