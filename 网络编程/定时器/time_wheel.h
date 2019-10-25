@@ -32,7 +32,7 @@ namespace Time_Wheel{
             int rotation;//这个定时器还需要多少圈才生效
             int time_solt;//当前定时器所属于时间轮的槽数
             void (*cb_func)(std::shared_ptr<client_date>);
-            std::shared_ptr<client_date> cd;
+            std::shared_ptr<client_date> cd = nullptr;
     };
 
     class time_wheel{
@@ -51,7 +51,7 @@ namespace Time_Wheel{
                 }
                 int rotation = timeout / N;//多少圈后被触发
                 int ts = (cur_slot + (ticks % N)) %N;//所在槽
-                auto timer = std::make_shared<tw_timer>(new tw_timer(rotation,ts));
+                auto timer = std::make_shared<tw_timer>(rotation,ts);
                 vec[ts].emplace_back(timer);
                 return vec[ts].end();//返回一个迭代器
             }
@@ -62,7 +62,11 @@ namespace Time_Wheel{
             void tick(){
                 auto first_node = vec[cur_slot].front();
                 std::cout << "Current solt is " << cur_slot << std::endl;
-                for(auto x = vec[cur_slot].begin();!vec[cur_slot].empty() || x == vec[cur_slot].end();x++){
+                if(vec[cur_slot].empty()){
+                    cur_slot = (cur_slot + 1) % N;
+                    return;
+                }
+                for(auto x = vec[cur_slot].begin();vec[cur_slot].empty() || x == vec[cur_slot].end();x++){
                     if(x->get()->rotation > 1){
                         x->get()->rotation -= 1;
                     }else{ //定时器已经到期
