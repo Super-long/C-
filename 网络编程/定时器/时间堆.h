@@ -18,6 +18,7 @@ namespace LIST_TIMER{
 
     struct client_data{//客户信息类
         //struct sockaddr_in address; //C++中好像没有这个
+
         int sockfd;
         char buf[BUFFER_SIZE];
         //util_timer *timer;
