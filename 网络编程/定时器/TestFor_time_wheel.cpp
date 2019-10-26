@@ -126,19 +126,15 @@ int main(int argc,char **argv){
                 int connfd = accept(listenfd,(struct sockaddr*)&client_address,&client_addrlength);
                 //设置用户设置
                 addfd(epollfd,connfd);
-                users[sockfd] = make_shared<client_date>();
-                users[sockfd]->address =client_address;
-                users[sockfd]->socked = connfd;
+                users[connfd] = make_shared<client_date>();
+                users[connfd]->address =client_address;
+                users[connfd]->socked = connfd;
                 auto itr = timer.add_timer(TIMESLOT);
-                cout << "hello \n";
-                users[sockfd]->ptr = itr;
-                cout << "eorld\n";
+                users[connfd]->ptr = itr;
                 //itr->get()->cb_func = cd_func;//注册回调函数
                 (*itr)->cb_func = cd_func;
-                cout << "okoko\n";
                 (*itr)->cd = users[connfd];
                 //itr->get()->cd = users[connfd];
-                cout << "lllll\n";
             }else if((sockfd == pipefd[0]) && (events[i].events & EPOLLIN)){//信号事件
                 int sig = 0;
                 char signals[1024];
@@ -164,8 +160,9 @@ int main(int argc,char **argv){
                     }
                 }
             }else if(events[i].events & EPOLLIN){//处理用户接收到的数据
-                memset(users[sockfd]->buf,0,sizeof(users[sockfd]->buf));
-                ret = recv(sockfd,users[sockfd]->buf,BUFFER_SIZE,0);
+                cout << sockfd << endl;
+                memset(users[sockfd]->buf,'\0',sizeof(users[sockfd]->buf));
+                ret = recv(sockfd,users[sockfd]->buf,BUFFER_SIZE-1,0);
                 std::cout << "get " << ret << " bytes of clint data " 
                 << users[sockfd]->buf << " from " << sockfd << endl; 
                 auto ptr = users[sockfd]->ptr;
@@ -193,7 +190,6 @@ int main(int argc,char **argv){
             timeout = false;
         }
     }
-    cout << "hello" << endl; ;
     close(listenfd);
     close(pipefd[0]);
     close(pipefd[1]);

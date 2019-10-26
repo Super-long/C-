@@ -38,7 +38,7 @@ namespace Time_Wheel{
     class time_wheel{
         using itr = std::list<std::shared_ptr<tw_timer>>::iterator;
         public:
-            time_wheel():vec(N){}
+            time_wheel():vec(N),cur_slot(0){}
             itr add_timer(int timeout){//参数为超时时间
                 if(timeout < 0){
                     throw std::exception();
@@ -53,7 +53,9 @@ namespace Time_Wheel{
                 int ts = (cur_slot + (ticks % N)) %N;//所在槽
                 auto timer = std::make_shared<tw_timer>(rotation,ts);
                 vec[ts].emplace_back(timer);
-                return vec[ts].end();//返回一个迭代器
+                auto x = vec[ts].end();
+                x--; 
+                return x;//返回一个迭代器
             }
             void del_timer(itr tmp){ //传一个迭代器进来
                 int ts = tmp->get()->time_solt;
@@ -66,7 +68,7 @@ namespace Time_Wheel{
                     cur_slot = (cur_slot + 1) % N;
                     return;
                 }
-                for(auto x = vec[cur_slot].begin();vec[cur_slot].empty() || x == vec[cur_slot].end();x++){
+                for(auto x = vec[cur_slot].begin();!vec[cur_slot].empty() || x == vec[cur_slot].end();x++){
                     if(x->get()->rotation > 1){
                         x->get()->rotation -= 1;
                     }else{ //定时器已经到期
@@ -77,7 +79,7 @@ namespace Time_Wheel{
                 cur_slot = (cur_slot + 1) % N;
             }
         private:
-            enum{SI = 1,N = 60};//N为时间轮槽数　SI为一个心博时间
+            enum{SI = 2,N = 60};//N为时间轮槽数　SI为一个心博时间
             std::vector<std::list<std::shared_ptr<tw_timer>>>vec;
             int cur_slot; //当前时间槽
     };
