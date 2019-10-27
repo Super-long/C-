@@ -79,7 +79,7 @@ namespace Time_Wheel{
                 cur_slot = (cur_slot + 1) % N;
             }
         private:
-            enum{SI = 2,N = 60};//N为时间轮槽数　SI为一个心博时间
+            enum{SI = 2,N = 60};//N为时间轮槽数　SI为一个心博时间　SI应该与信号发送间隔相同
             std::vector<std::list<std::shared_ptr<tw_timer>>>vec;
             int cur_slot; //当前时间槽
     };

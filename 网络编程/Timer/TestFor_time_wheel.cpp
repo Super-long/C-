@@ -1,5 +1,5 @@
 /*这个测试函数的作用实际上就是处理非活动链接
-通过信号触发时间轮的tick函数*/
+通过信号触发时间轮的tick函数 2019.10.26测试完成*/
 #include<stdio.h>
 #include<sys/types.h>
 #include<sys/socket.h>
