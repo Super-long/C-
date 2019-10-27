@@ -22,7 +22,8 @@ void pv(int sem_id,int op){
 }
 
 int main(int argc,char **argv){
-    int sem_id = semget(IPC_PRIVATE,1,0666);
+    int sem_id = semget(IPC_PRIVATE,1,0666);//仅特殊键值IPC_PRIVATE这样写第三个参数
+    printf("%d\n",sem_id);
     union semun sem_un;
     sem_un.val = 1;
     //第二个参数为信号量在信号集中的编号　0表示第一个
