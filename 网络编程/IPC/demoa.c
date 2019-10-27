@@ -1,4 +1,5 @@
-//注意sudo执行　这是一个很重要的细节
+//注意sudo执行　这是一个很重要的细节 
+//ps:这两个代码嫌麻烦都没释放资源，，，
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
