@@ -7,7 +7,7 @@
 #include<string.h>
 
 #define SV_SOCKET_PATH "/home/lizhaolong/suanfa/C++/网络编程/IPC/c"
-#define BUF_SIZE 100
+#define BUF_SIZE 10
 #define BACKLOG 5
 
 int main(int argc,char **argv){
