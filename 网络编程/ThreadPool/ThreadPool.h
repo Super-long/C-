@@ -101,7 +101,7 @@ void threadpool<T>::run(){
         m_QueueState.unlock();
         //这里就是线程得到这个参数后如何执行
         std::cout << pthread_self() << std::endl;
-        solve(*request);
+        solve(*request);//执行函数 
     }
 }
 

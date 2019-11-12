@@ -17,3 +17,5 @@ module_exit(lkm_exit);
 MODULE_LICENSE("GPL"); //许可证 
 
 //感觉用make是为了跨平台
+///usr/src/linux-headers-4.15.0-29deepin/include/linux
+//cp linux /usr/include 
