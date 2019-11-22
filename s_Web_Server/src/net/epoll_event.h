@@ -4,7 +4,7 @@
 #include"../base/copyable.h"
 #include<sys/epoll.h>
 #include<initializer_list>
-
+ 
 namespace ws{
     enum EpollEventType{
         EETCOULDREAD  = ::EPOLLIN,
@@ -27,6 +27,9 @@ namespace ws{
             EpollEvent() : event_(){}                   //这里的原因是因为epoll_event这个结构体中还包含者一个共用体
             explicit EpollEvent(int fd) : event_(epoll_event{EpollRW(),{.fd = fd}}){}
             EpollEvent(int fd,EpollEventType EET) : event_(epoll_event{EET,{.fd = fd}}){}
+            EpollEvent(const Havefd& Hf,EpollEventType EET) : 
+                event_(epoll_event{EET,{.fd = Hf.fd()}}){} //这样可以被Havefd的派生类构造 其中包含fd 可行
+
             bool check(EpollEventType EET){return event_.events & EET;}
             bool check(std::initializer_list<EpollEventType> EET){
                 for(auto T : EET){

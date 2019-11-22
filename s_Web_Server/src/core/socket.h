@@ -1,0 +1,34 @@
+#include"../base/havefd.h"
+#include"../base/copyable.h"
+
+#include<sys/epoll.h>
+#include<sys/socket.h>
+
+namespace ws{
+    class Socket : public Havefd,Copyable{
+        public:
+            Socket() : Socket_fd_(socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0)){
+                SetNoblockingCLOEXEC();
+            }
+            explicit Socket(int fd) : Socket_fd_(fd){}
+            explicit Socket(const Havefd& Hf) : Socket_fd_(Hf.fd()){}
+            explicit Socket(const Havefd&& Hf) : Socket_fd_(Hf.fd()){}
+            
+            virtual ~Socket() {if(Have_Close_) Close();}
+            
+            int Close();
+            
+            int fd() const noexcept override {return Socket_fd_; }
+
+            int SetNoblocking(int flag = 0);
+            int SetNoblockingCLOEXEC();
+
+            int Read(char* Buffer, int Length, int flag = -1);
+            int Write(char* Buffer, int length, int flag = -1);
+            //int Read(...)
+
+        private:
+            bool Have_Close_ = true;
+            int Socket_fd_;
+    };
+}

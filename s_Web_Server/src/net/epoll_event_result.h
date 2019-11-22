@@ -6,7 +6,7 @@
 #include<memory>
 namespace ws{
     class EpollEvent_Result final : public Nocopy{
-        friend class Epoll;
+        friend class Epoll; 
         public:
             explicit EpollEvent_Result(int len) : 
             array(new EpollEvent[len]),Available_length(0),All_length(len){}

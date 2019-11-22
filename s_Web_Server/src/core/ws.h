@@ -5,6 +5,6 @@ namespace ws{
             Web_Server();
             void Running();
         private:
-            Epoll;
+            Epoll _Epoll_;
     };
 }
