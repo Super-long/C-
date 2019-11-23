@@ -27,7 +27,7 @@ namespace ws{
         kHCHttpVersionNotSupported = 505
     };
 
-    enum HttpRequest{
+    enum HttpRequestMethod{
         HRGet = 0,
         HRHead,
         HRDELETE,
@@ -43,17 +43,18 @@ namespace ws{
     };
 
     enum HttpParserStatus{
-
+        HPSOK,
     };
 
     enum HttpParserFault{
-
+        HPFOK,
+        HPFToLittleMessage,
     };
 
     struct HttpParser_Content{
-        HttpRequest method;
-        HttpParserStatus Status;
-        HttpParserFault Fault;
+        HttpRequestMethod method = HRInit;
+        HttpParserStatus Status = HPSOK;
+        HttpParserFault Fault = HPFOK;
 
         const char* Uri = nullptr; //请求方式
         const char* Header = nullptr;

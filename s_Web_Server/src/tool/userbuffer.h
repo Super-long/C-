@@ -7,7 +7,7 @@
 #include<string>
 
 namespace ws{
-    class UserBuffer : public Nocopy,BaseBuffer{
+    class UserBuffer : public Nocopy,public BaseBuffer{
         public:
             explicit UserBuffer(int Length = 8096) : Buffer_Size(Length),Write_Spot(0),
             Read_Spot(0),Buffer_(std::make_unique<char[]>(static_cast<size_t>(Length))) {}
