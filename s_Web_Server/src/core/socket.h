@@ -1,8 +1,13 @@
 #include"../base/havefd.h"
 #include"../base/copyable.h"
+#include"../tool/userbuffer.h"
 
 #include<sys/epoll.h>
 #include<sys/socket.h>
+#include<memory>
+
+#ifndef SOCKET_H_
+#define SOCKET_H
 
 namespace ws{
     class Socket : public Havefd,Copyable{
@@ -24,6 +29,8 @@ namespace ws{
             int SetNoblockingCLOEXEC();
 
             int Read(char* Buffer, int Length, int flag = -1);
+            int Read(std::shared_ptr<UserBuffer>, int length = -1, int flag = -1);
+
             int Write(char* Buffer, int length, int flag = -1);
             //int Read(...)
 
@@ -32,3 +39,5 @@ namespace ws{
             int Socket_fd_;
     };
 }
+
+#endif

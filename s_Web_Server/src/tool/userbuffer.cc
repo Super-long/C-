@@ -1,18 +1,26 @@
 #include"userbuffer.h"
 #include <cstring>
-//#include <cstdarg>
 
 namespace ws{
+
     void UserBuffer::Read(char* Start, int bytes) {
-        if(Read_Spot + bytes > Buffer_Size){
+        if(Read_Spot + bytes > Write_Spot){
             throw std::out_of_range("'UserBuffer::Read' Out ou range when reading.");
         }
         memcpy(Start,Buffer_.get() + Read_Spot, static_cast<size_t>(bytes));
         Read_Spot += static_cast<size_t>(bytes);
     }
 
+/*     void UserBuffer::Read(std::string& str, int bytes){
+        if(Read_Spot + bytes > Write_Spot){
+            throw std::out_of_range("'UserBuffer::Read' Out ou range when reading.");
+        }
+        memcpy(const_cast<char*>(str.c_str()),Buffer_.get() + Read_Spot, static_cast<size_t>(bytes));
+        Read_Spot += static_cast<size_t>(bytes);  
+    } */
+
     std::unique_ptr<char[]> UserBuffer::Read(int bytes){
-        if(Read_Spot + bytes > Buffer_Size){
+        if(Read_Spot + bytes > Write_Spot){
             throw std::out_of_range("'UserBuffer::Read' Out ou range when reading.");
         }
         std::unique_ptr<char[]> ptr(new char(Readable()));
@@ -22,10 +30,18 @@ namespace ws{
     }
 
     char UserBuffer::Peek(int jump) const{
-        if(Buffer_Size < Read_Spot + jump && Read_Spot + jump < 0 ){
+        if(Write_Spot < Read_Spot + jump && Read_Spot + jump < 0 ){
             throw std::out_of_range("'UserBuffer::Peek' The parameter is not in the vaild range.");
         }
-        return Buffer_[jump];
+        return Buffer_[Read_Spot + jump];
+    }
+
+    int UserBuffer::Write(int bytes){
+        if(bytes > Writeable()){
+            throw std::out_of_range("'UserBuffer::Write' The parameter is not in the valid range");
+        }
+        Write_Spot += bytes;
+        Move_Buffer();
     }
 
     int UserBuffer::Write(char* Buf, int bytes){
