@@ -18,7 +18,7 @@ namespace ws{
             HttpParserFault Starting_Parser(); 
             bool Finished() const{ return Parser_Result->Fault != HPFOK;}
             
-            bool Requesting();
+            bool SetRequesting(); //设置Request对象中的值
 
         private:
             std::shared_ptr<UserBuffer> User_Buffer_;

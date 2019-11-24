@@ -7,22 +7,32 @@
 #include<algorithm>
 #include"../core/socket.h"
 #include"../tool/userbuffer.h"
+#include"../http/httprequest.h"
+#include"../http/httpparser.h"
 
 namespace ws{
     class Member : public Nocopy,public Havefd{
         public:
-            Member(int fd, int time) : Socket_Ptr(std::make_unique<Socket>(fd)),Time_Spot(time){}
-            Member(std::unique_ptr<Socket>&& ptr, int time) : Time_Spot(time){
+            Member(int fd, long time) : Socket_Ptr(std::make_unique<Socket>(fd)),Time_Spot(time){}
+            Member(std::unique_ptr<Socket>&& ptr, long time) : Time_Spot(time){
                 std::swap(Socket_Ptr,ptr);
             }
 
-            int fd() const final{return Socket_Ptr->fd();}
+            long TimeSpot() const { return Time_Spot; }
+            void Touch(long Time_) { Time_Spot = Time_; }
+
+            void DoRead();
+            void DoWrite();
+
+            int fd() const final{return Socket_Ptr->fd();} 
 
         private:
+            std::unique_ptr<HttpParser> Http_Parser_;
+            std::unique_ptr<HttpRequest> Http_Request_;
             std::unique_ptr<Socket> Socket_Ptr;
             
-            std::unique_ptr<UserBuffer> User_Buffer;
-            int Time_Spot;
+            std::shared_ptr<UserBuffer> User_Buffer;
+            long Time_Spot;
     };
 }
 

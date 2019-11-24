@@ -48,7 +48,7 @@ namespace ws{
         if(!Exist(fd)){
             throw std::invalid_argument("'Manger::JudgeToClose' Don't have this fd.");
         }
-        //if()//判断解析出来是否存在keepalive      
+        //if()//判断解析出来是否存在keepalive       
     }
 
     void Manger::Reading(int fd, int time){
@@ -57,7 +57,7 @@ namespace ws{
         }
         auto& user = Fd_To_Member[fd];
         
-    }
+    } 
 
     void Manger::Writing(int fd, int time){
 
