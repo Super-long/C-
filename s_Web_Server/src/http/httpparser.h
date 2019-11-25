@@ -16,11 +16,11 @@ namespace ws{
 
             void Again_Parser();
             HttpParserFault Starting_Parser(); 
-            bool Finished() const{ return Parser_Result->Fault != HPFOK;}
+            bool Finished() const{ return Parser_Result->Fault != HPFOK && Parser_Result->Fault != HPFContent;}
             
             bool SetRequesting(); //设置Request对象中的值
 
-        private:
+        private: 
             std::shared_ptr<UserBuffer> User_Buffer_;
             std::unique_ptr<HttpParser_Content> Parser_Result;
             std::shared_ptr<HttpRequest> Request_Result;

@@ -20,8 +20,8 @@ namespace ws{
 
             void TimeWheel();//定时器 后来再实现  
 
-            void Reading(int fd, int time);
-            void Writing(int fd, int time);
+            void Reading(int fd, long time); 
+            void Writing(int fd, long time);
             int JudgeToClose(int fd);
             int Update(int fd);
 

@@ -78,7 +78,9 @@ namespace ws{
         HPFInvaildHeader_Value,
         HPFContentLength,
         HPFSetConnection,
-        
+        HPFContent,
+        HPFCRLFCR,
+        HPFContent_Nonatch_Length,
     };
 
     struct HttpParser_Content{

@@ -48,18 +48,26 @@ namespace ws{
         if(!Exist(fd)){
             throw std::invalid_argument("'Manger::JudgeToClose' Don't have this fd.");
         }
-        //if()//判断解析出来是否存在keepalive       
+        auto& T = Fd_To_Member[fd];
+
+        if(T->CloseAble()){
+            _Epoll_.Remove(static_cast<EpollEvent>(fd));
+            auto temp = Fd_To_Member.find(fd);
+            Fd_To_Member.erase(temp);
+        }
     }
 
-    void Manger::Reading(int fd, int time){
+    void Manger::Reading(int fd, long _time_){
         if(!Exist(fd)){
             throw std::invalid_argument("'Manger::Reading' Don't have this fd.");
         }
-        auto& user = Fd_To_Member[fd];
-        
+        auto& user = Fd_To_Member[fd];//得到相关连接的信息
+        user->DoRead();
+
+        user->Touch(_time_);
     } 
 
-    void Manger::Writing(int fd, int time){
+    void Manger::Writing(int fd, long time){
 
     }
 }
