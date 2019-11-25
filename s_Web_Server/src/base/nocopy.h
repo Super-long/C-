@@ -9,7 +9,7 @@ namespace ws{
             Nocopy &operator=(const Nocopy& para) = delete;
         protected://这个很重要
             constexpr Nocopy() = default;
-            ~Nocopy() = default;
+            virtual ~Nocopy() = default;
     };
 }
 
