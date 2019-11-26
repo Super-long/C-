@@ -31,6 +31,8 @@ namespace ws{
             const char* AutoAdapt() const;//用于指定响应数据的类型和编码
             constexpr const char* defaultMIME() const{return "text/html";}//实在是没什么呀
             bool IsFilename(char) const;
+
+            virtual void provide() = 0; //其中与文件解析共同被多继承
         protected:
 
             std::shared_ptr<HttpRequest> _Request_;
