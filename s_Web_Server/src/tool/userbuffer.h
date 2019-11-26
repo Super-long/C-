@@ -30,7 +30,8 @@ namespace ws{
             int Write(char* Buf, int bytes);
             int Write(const char* Buf,int bytes);
             int Write(const std::string& str);
-            
+            int SWrite(const char* , va_list);
+
             void Clean(){Write_Spot = 0,Read_Spot = 0;}
             size_t WSpot()const noexcept {return Write_Spot;}
             size_t RSpot()const noexcept {return Read_Spot;}

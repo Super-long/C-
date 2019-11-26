@@ -72,7 +72,11 @@ namespace ws{
         return static_cast<int>(len);
     }
 
-    void UserBuffer::Move_Buffer(){ //先试下有没有bug
+    int UserBuffer::SWrite(const char* format, va_list para){
+        return vsnprintf(Buffer_.get() + Write_Spot, static_cast<size_t>(Writeable()), format, para);
+    }
+
+    void UserBuffer::Move_Buffer(){
         size_t inter = Write_Spot - Read_Spot;
         memcpy(Buffer_.get(), Buffer_.get() + Read_Spot, inter);
         Read_Spot = 0;
