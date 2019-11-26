@@ -24,10 +24,11 @@ namespace ws{
             //写上一个空行
 
             int ProvideError(); //错误的情况所要写的东西 
-            int RegularProvide(bool, long);//多出来的参数用于content-type
-            int RegularProvide(bool, long, const char*);
-
-            const char* AutoAdapt() const{}
+            int RegularProvide(long Content_Length);//多出来的参数用于content-type
+            int RegularProvide(long Content_Length, const char*);
+                                        //long int
+            const char* MIME(const char*, ptrdiff_t) const;
+            const char* AutoAdapt() const;//用于指定响应数据的类型和编码
             constexpr const char* defaultMIME() const{return "text/html";}//实在是没什么呀
             bool IsFilename(char) const;
         protected:

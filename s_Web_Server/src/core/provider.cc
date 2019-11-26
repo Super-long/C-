@@ -35,6 +35,40 @@ namespace ws{
         return _Write_Loop_->swrite("/r/n", 2);
     } 
 
-    
+    //TODO : 我好像还没设置statuscode
+    int Provider::RegularProvide(long Content_Length, const char* Content_Type){
+        int ret = WriteHead(_Request_->Return_Version_Ma(),_Request_->Return_Version_Mi(),
+        _Request_->Return_Statuscode());
+        ret += WriteDate();
+        ret += WriteConnection();
+        ret += WriteItem("Content-Type", Content_Type);
+        ret += WriteItem("Content-Length", std::to_string(Content_Length).c_str());
+        return ret;
+    }
+
+    //其实这是一个解析
+    const char* Provider::AutoAdapt() const{
+        const char* Start = _Request_->Return_Uri().ReadPtr() +_Request_->Return_Uri().Length();
+        const char* End = Start;
+
+        const char* temp = _Request_->Return_Uri().ReadPtr();
+        for(;Start != temp; --Start){
+            if(*Start == '.'){
+                break;
+            }else if(! IsFilename(*Start)){
+                End = Start;
+            }
+        }
+        return Start == temp ? defaultMIME() : MIME(Start, std::distance(Start, End));
+    }
+
+    int Provider::RegularProvide(long Content_Length){
+        RegularProvide(Content_Length, AutoAdapt());
+    }
+
+    //TODU 类型在csdn收藏中 需要正则去处理文件
+    const char* Provider::MIME(const char* type, ptrdiff_t len) const{
+
+    }
 
 }
