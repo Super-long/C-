@@ -17,7 +17,7 @@ namespace ws{
             int Add(EpollEvent&& para){
                 return epoll_ctl(epoll_fd_, EPOLL_CTL_ADD,para.Return_fd(),para.Return_Pointer());
             }
-            int Add(const Havefd& Hf,EpollEventType& ETT){
+            int Add(const Havefd& Hf,EpollEventType ETT){
                 return Add({Hf,ETT});
             }
 

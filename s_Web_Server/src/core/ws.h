@@ -1,3 +1,6 @@
+#ifndef WS_H_
+#define WS_H_
+
 #include"../net/epoll.h"
 #include"server.h"
 #include"manger.h"
@@ -9,6 +12,8 @@ namespace ws{
         private:
             Manger _Manger_;
             Epoll _Epoll_;
-            Server _Server_;
+            Server _Server_; 
     };
 }
+
+#endif WS_H_

@@ -17,15 +17,16 @@ namespace ws{
             int Opera_Member(std::unique_ptr<Member>&&, EpollEventType&&);
             int Opera_Member(std::unique_ptr<Member>&, EpollEventType&&);
             int Opera_Member(std::unique_ptr<Member>&&, EpollEventType&);
+            
+            //TODO:://时间轮 后来再实现  
+            void TimeWheel();
 
-            void TimeWheel();//定时器 后来再实现  
-
-            void Reading(int fd, long time); 
-            void Writing(int fd, long time);
+            void Reading(int fd, long time = -1); 
+            void Writing(int fd, long time = -1);
             int JudgeToClose(int fd);
             int Update(int fd);
 
-            int Remove(int fd);
+            int Remove(int fd); 
             bool Exist(int fd){if(Fd_To_Member.find(fd) != Fd_To_Member.end()) return true; return false;}
 
         private:
