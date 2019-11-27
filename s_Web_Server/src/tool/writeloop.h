@@ -5,6 +5,7 @@
 #include"../base/nocopy.h"
 #include"../tool/userbuffer.h"
 #include"../base/havefd.h"
+#include"../tool/filereader.h"
 #include<deque>
 #include<memory>
 #include<string>
@@ -32,14 +33,19 @@ namespace ws{
             void AddTask(int len){Que.emplace_back([this, len]{return Send(len);});}
             void AddTask() {AddTask(User_Buffer_->Readable());}
              
+            void AddSend(int length){Que.emplace_back([this, length]{return Send(length);});}
+            void AddSend(){Que.emplace_back([this]{return Send(User_Buffer_->Readable());});}
+            void AddSendFile(std::shared_ptr<FileReader> ptr){Que.emplace_back([this, ptr]{return SendFile(ptr);});}
+
         private:
             std::unique_ptr<UserBuffer> User_Buffer_;
             std::deque<Task> Que;
             int fd_;
-
+ 
             bool Send(int length);
+            bool SendFile(std::shared_ptr<FileReader>);
             void InsertSend(int len){Que.emplace_front([this,len] {return Send(len);});} //巧妙　知道为什么要用双端队列了
-
+            void InsertSendFile(const std::shared_ptr<FileReader>& ptr) {Que.emplace_back([this, ptr]{return SendFile(ptr);});}
     };
 }
 

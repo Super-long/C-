@@ -45,6 +45,8 @@ namespace ws{
             void Store_Header(const ParsedHeader&, const ParsedHeader&);
             ParsedHeader Get_Value(const ParsedHeader&) const;
 
+            bool Request_good() const{return Fault_ == HPFContent;}
+
         private:
             int Version_Major;
             int Version_Minor;

@@ -71,4 +71,15 @@ namespace ws{
 
     }
 
+    //说实话 不清楚错误该怎么回复
+    int Provider::ProvideError(){
+        static constexpr const char temp[] = "<html><head><title>Transgate/HTTP Error</title></head>";
+        size_t len = strlen(temp);
+        int ret = RegularProvide(len - 1);
+        ret += WriteCRLF();
+        ret += _Write_Loop_->swrite(temp, len);
+        _Write_Loop_->AddSend(ret);
+        return ret;
+    }
+
 }

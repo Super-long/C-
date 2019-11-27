@@ -11,4 +11,14 @@ namespace ws{
         return ret;
     }
 
+    bool WriteLoop::SendFile(std::shared_ptr<FileReader> ptr){
+        ssize_t len = 0;
+        while(len = ptr->SendFile(fd_) && len > 0){}
+        if(ptr->Send_End()){
+            InsertSendFile(ptr);
+            return false;
+        }
+        return true;
+    }
+
 }

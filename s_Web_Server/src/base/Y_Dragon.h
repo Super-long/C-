@@ -1,6 +1,13 @@
+#include"../http/httprequest.h"
+#include<memory>
 namespace Y_Dragon{
 
     constexpr const char* Version(){
         return "0.0";
     };
+    //同一IP发送请求过多 或IP被列入黑名单
+    //文件权限不够
+    bool IsForbidden(std::shared_ptr<ws::HttpRequest>){
+
+    }
 }
