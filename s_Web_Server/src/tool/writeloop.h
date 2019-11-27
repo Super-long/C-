@@ -37,6 +37,9 @@ namespace ws{
             void AddSend(){Que.emplace_back([this]{return Send(User_Buffer_->Readable());});}
             void AddSendFile(std::shared_ptr<FileReader> ptr){Que.emplace_back([this, ptr]{return SendFile(ptr);});}
 
+            bool DoFirst();
+            bool DoAll(){while(DoFirst());}
+
         private:
             std::unique_ptr<UserBuffer> User_Buffer_;
             std::deque<Task> Que;

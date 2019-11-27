@@ -16,7 +16,7 @@ namespace ws{
 
             void Again_Parser();
             HttpParserFault Starting_Parser(); 
-            bool Finished() const{ return Parser_Result->Fault != HPFOK && Parser_Result->Fault != HPFContent;}
+            bool Finished() const{ return Parser_Result->Fault != HPFOK;}
             
             bool SetRequesting(); //设置Request对象中的值
 

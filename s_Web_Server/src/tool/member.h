@@ -9,7 +9,8 @@
 #include"../tool/userbuffer.h"
 #include"../http/httprequest.h"
 #include"../http/httpparser.h"
-
+#include"../core/contentprovide.h"
+#include"../tool/writeloop.h"
 namespace ws{
     class Member : public Nocopy,public Havefd{
         public:
@@ -32,6 +33,8 @@ namespace ws{
             std::unique_ptr<HttpParser> Http_Parser_;
             std::unique_ptr<HttpRequest> Http_Request_;
             std::unique_ptr<Socket> Socket_Ptr;
+            std::shared_ptr<WriteLoop> Write_Loop_;
+            std::unique_ptr<ContentProvider> Content_Provider_;
             
             std::shared_ptr<UserBuffer> User_Buffer;
             long Time_Spot;

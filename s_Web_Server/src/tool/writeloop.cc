@@ -21,4 +21,13 @@ namespace ws{
         return true;
     }
 
+    bool WriteLoop::DoFirst(){
+        if(!Que.empty()) {
+            auto Fun = Que.front();
+            Que.pop_front();
+            return Fun();
+        }
+        return false;
+    }
+
 }

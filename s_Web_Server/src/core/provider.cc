@@ -1,4 +1,5 @@
 #include"provider.h"
+#include"../http/httpstatus.h"
 #include"../base/Y_Dragon.h"
 
 
@@ -75,6 +76,7 @@ namespace ws{
     int Provider::ProvideError(){
         static constexpr const char temp[] = "<html><head><title>Transgate/HTTP Error</title></head>";
         size_t len = strlen(temp);
+        _Request_->Set_StatusCode(HSCBadRequest);
         int ret = RegularProvide(len - 1);
         ret += WriteCRLF();
         ret += _Write_Loop_->swrite(temp, len);
