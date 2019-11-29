@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.4.1)
 project(Web_Server) #引入两个变量
 
 set(CMAKE_CXX_STANDARD 14)
-link_libraries(pthread)
+link_libraries(-pthread)
 #add_definitions("-03")#下去搞清楚这个句子的含义
 
 aux_source_directory(/src/base WS_BASE)
@@ -21,4 +21,4 @@ add_executable(Web_Server
         ${WS_HTTP}
         ${WS_TOOL}
         ${WS_PROVIDER}
-        )
+)
