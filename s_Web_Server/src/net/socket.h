@@ -1,3 +1,7 @@
+#ifndef SOCKET__H_
+#define SOCKET__H_
+
+
 #include"../base/havefd.h"
 #include"../base/copyable.h"
 #include"../tool/userbuffer.h"
@@ -5,9 +9,8 @@
 #include<sys/epoll.h>
 #include<sys/socket.h>
 #include<memory>
-
-#ifndef SOCKET_H_
-#define SOCKET_H
+#include<unistd.h>
+#include<fcntl.h>
 
 namespace ws{
     class Socket : public Havefd,Copyable{
@@ -19,9 +22,9 @@ namespace ws{
             explicit Socket(const Havefd& Hf) : Socket_fd_(Hf.fd()){}
             explicit Socket(const Havefd&& Hf) : Socket_fd_(Hf.fd()){}
             
-            virtual ~Socket() {if(Have_Close_) Close();}
+            virtual ~Socket() {if(Have_Close_) ::close(Socket_fd_);}
             
-            int Close();
+            int Close(); 
             
             int fd() const noexcept override {return Socket_fd_; }
 

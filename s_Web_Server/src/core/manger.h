@@ -2,11 +2,11 @@
 #define MANGER_H_
 
 #include"../base/copyable.h"
-#include"socket.h"
+#include"../net/socket.h"
 #include"../net/epoll.h"
 #include<unordered_map>
 #include<memory>
-#include"../tool/member.h"
+#include"member.h"
 #include"../net/epoll_event.h"
 
 namespace ws{

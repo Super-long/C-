@@ -1,19 +1,9 @@
-#include"ws.h"
 #include"../base/Y_Dragon.h"
 #include<signal.h>
-#include<stdio.h>
 #include<iostream>
-#include<pthread.h>
-#include"../base/Y_Dragon.h"
-#include"../tool/member.h"
-#include"../net/epoll_event.h"
-#include"../net/epoll_event_result.h"
-
-#include<sys/types.h>
-#include<unistd.h>
+#include<assert.h> 
 #include<sys/time.h>
-#include<stdlib.h>
-#include<assert.h>
+#include"ws.h"
 
 namespace ws{
 

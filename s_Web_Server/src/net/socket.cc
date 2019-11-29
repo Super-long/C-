@@ -1,7 +1,5 @@
 #include"socket.h"
-#include<sys/socket.h>
-#include<unistd.h>
-#include<fcntl.h>
+
 
 namespace ws{
     int Socket::Close(){

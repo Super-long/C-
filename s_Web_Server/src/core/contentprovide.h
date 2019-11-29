@@ -2,9 +2,9 @@
  #define CONTENTPROVIDER_H_
 
 #include"../base/nocopy.h"
-#include"../tool/writeloop.h"
+#include"../net/writeloop.h"
 #include"../http/httprequest.h"
-#include"provider.h"
+#include"provider/provider.h"
 #include<memory>
 namespace ws{
 

@@ -1,10 +1,10 @@
 #ifndef PROVIDER_H_
 #define PROVIDER_H_
 
-#include"../base/copyable.h"
-#include"../http/httprequest.h"
-#include"../tool/writeloop.h"
-#include"../http/httpstatus.h"
+#include"../../base/copyable.h"
+#include"../../http/httprequest.h"
+#include"../../net/writeloop.h"
+#include"../../http/httpstatus.h"
 #include<memory>
 
 

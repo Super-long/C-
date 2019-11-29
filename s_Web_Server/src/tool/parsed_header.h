@@ -53,10 +53,10 @@ namespace ws{
     std::ostream& operator<<(std::ostream&, const ParsedHeader&);
     
     struct ParseHeaderHash{
-        size_t operator()(const ParsedHeader& ptr){
+        size_t operator()(const ParsedHeader& ptr) const {
             return std::hash<const char*>()(ptr.ReadPtr());
         }
-    };
+    }; 
 }
 
 

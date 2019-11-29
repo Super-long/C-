@@ -2,7 +2,7 @@
 #define REAPROVIDER_H_
 
 #include"provider.h"
-#include"../tool/writeloop.h"
+#include"../net/writeloop.h"
 #include"../tool/filereader.h"
 #include"../http/httprequest.h"
 #include"../tool/parsed_header.h"

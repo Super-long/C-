@@ -1,6 +1,7 @@
 #ifndef EPOLLEVENT_H_
 #define EPOLLEVENT_H_
 
+#include"../base/havefd.h"
 #include"../base/copyable.h"
 #include<sys/epoll.h>
 #include<initializer_list>
