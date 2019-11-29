@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/Web_Server.dir/src/Web_Server.cc.o  -o Web_Server -pthread 
