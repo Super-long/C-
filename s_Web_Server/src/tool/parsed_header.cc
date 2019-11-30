@@ -26,4 +26,9 @@ namespace ws{
         os.write(ptr.ReadPtr(), ptr.Readable());
         return os;
     }
+
+    bool ParsedHeader::operator==(const ParsedHeader& para) const{
+        bool Len_is_equal = (length == para.Readable());
+        return (Len_is_equal && (strncmp(Header, para.ReadPtr(), length) == 0));
+    }
 }

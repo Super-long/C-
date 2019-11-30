@@ -16,7 +16,7 @@ namespace ws{
 
             std::unique_ptr<Socket> Server_Accept();
             void Server_Accept(fun);
-            void Server_BindAndListen();
+            void Server_BindAndListen(); 
 
             int Set_AddrRUseA() {return Set_Socket(SO_REUSEADDR);}
             int Set_AddrRUseP() {return Set_Socket(SO_REUSEPORT);}

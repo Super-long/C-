@@ -22,6 +22,10 @@ namespace ws{
 
             std::unique_ptr<char[]> Read(int Bytes) final;
             void Read(char* Start, int bytes) final;
+            void read(int bytes) {
+                if(bytes < 0) throw std::invalid_argument("'userbuffer::read' error paramater.");
+                Read_Spot += bytes;
+            }
             //void Read(std::string& str, int bytes);
             char Peek(int jump) const final;
             //The above function inherits from the base class.

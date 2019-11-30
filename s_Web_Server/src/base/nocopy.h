@@ -7,7 +7,7 @@ namespace ws{
         public:
             Nocopy(const Nocopy&) = delete;
             Nocopy &operator=(const Nocopy& para) = delete;
-        protected://这个很重要
+        protected:
             constexpr Nocopy() = default;
             virtual ~Nocopy() = default;
     };

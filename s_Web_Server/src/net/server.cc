@@ -1,4 +1,6 @@
 #include"server.h"
+#include<assert.h>
+#include<iostream>
 namespace{
     template <typename T>
     T max(T&& a,T&& b){
@@ -13,16 +15,18 @@ namespace ws{
 
     void Server::Server_Accept(fun){
         int ret = 0;
-        while(ret = ::accept4(fd(), nullptr, nullptr, SOCK_NONBLOCK) && ret != -1){
-            fun(ret);
-        }
+        ret = ::accept4(fd(), nullptr, nullptr, SOCK_NONBLOCK);
+        if(ret != -1) fun(ret);
+        else std::cout << "failed connection.\n";
+        std::cout << "已接收一个新的连接 fd : " << ret << std::endl; 
     }
 
-    void Server::Server_BindAndListen(){
-        int para1 = bind(fd(),Addr_->Return_Pointer(),Addr_->Return_length);
-        if(para1 = -1) throw std::runtime_error("'Server_BindAndListen' : error in bind.");
+    void Server::Server_BindAndListen(){ 
+        assert(Addr_ != nullptr); 
+        int para1 = bind(fd(),Addr_->Return_Pointer(),Addr_->Return_length());
+        if(para1 == -1) throw std::runtime_error("'Server_BindAndListen' : error in bind.");
         int para2 = listen(fd(),::max(SOMAXCONN,1024));
-        if(para2 = -1) throw std::runtime_error("'Server_BindAndListen' : error in listen.");        
+        if(para2 == -1) throw std::runtime_error("'Server_BindAndListen' : error in listen.");        
     }
 
     inline int Server::Set_Linger(){

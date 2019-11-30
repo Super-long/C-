@@ -8,15 +8,11 @@ namespace ws{
         return rv;
     }
 
-    inline int Socket::SetNoblocking(int flag){
+    int Socket::SetNoblocking(int flag){
         int old_option = fcntl(Socket_fd_,F_GETFL);
         int new_option = old_option | O_NONBLOCK | flag;
         fcntl(Socket_fd_,F_SETFL,new_option);
         return old_option;
-    }
-
-    inline int Socket::SetNoblockingCLOEXEC(){
-        return Socket::SetNoblocking(O_CLOEXEC);
     }
 
     int Socket::Read(std::shared_ptr<UserBuffer> ptr, int length, int flag){

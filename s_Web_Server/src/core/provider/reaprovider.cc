@@ -1,7 +1,7 @@
 #include"reaprovider.h"
-#include"../tool/parsed_header.h"
-#include"../tool/filereader.h"
-#include"../http/httpstatus.h"
+#include"../../tool/parsed_header.h"
+#include"../../tool/filereader.h"
+#include"../../http/httpstatus.h"
 namespace ws{
 
     void REAProvider::provide(){
@@ -25,10 +25,10 @@ namespace ws{
             return false; //解析出现错误
         }
         //这一步得到了要解析的文件
-        file = std::make_shared<FileReader>(_Request_->Get_Value(static_cast<ParsedHeader>("Host")), _Request_->Return_Uri().ReadPtr());
+        file = std::make_shared<FileReader>(static_cast<FileProxy>(_Request_->Get_Value(static_cast<ParsedHeader>("Host")).ReadPtr()), _Request_->Return_Uri().ReadPtr());
 
         if(!file->Fd_Good() || !file->IsTextFile()){
-            _Request_->Set_StatusCode(HSCForbidden);
+            _Request_->Set_StatusCode(HSCForbidden); 
             return true;
         }
         if(!file){

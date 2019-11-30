@@ -31,7 +31,7 @@ namespace ws{
             void Init();
         private:
             std::unique_ptr<HttpParser> Http_Parser_;
-            std::unique_ptr<HttpRequest> Http_Request_;
+            std::shared_ptr<HttpRequest> Http_Request_;
             std::unique_ptr<Socket> Socket_Ptr;
             std::shared_ptr<WriteLoop> Write_Loop_;
             std::unique_ptr<ContentProvider> Content_Provider_;

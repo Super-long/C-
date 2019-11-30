@@ -41,7 +41,7 @@ namespace ws{
             bool DoAll(){while(DoFirst());}
 
         private:
-            std::unique_ptr<UserBuffer> User_Buffer_;
+            std::unique_ptr<UserBuffer> User_Buffer_; 
             std::deque<Task> Que;
             int fd_;
  

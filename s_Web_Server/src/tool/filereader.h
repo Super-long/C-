@@ -1,8 +1,9 @@
-#ifndef FILEREADER_H_
-#define FILEREADER_H
+#ifndef _FILEREADER_H_
+#define _FILEREADER_H_
 
 #include"fileproxy.h"
-#include<string>
+#include<string> 
+
 namespace ws{
     class FileReader : public FileProxy{
         public:
@@ -10,14 +11,13 @@ namespace ws{
             FileReader(const FileProxy& proxy, const char* path) : FileProxy(proxy, path){}
             FileReader(const FileProxy& proxy, const std::string& str) : FileProxy(proxy, str.c_str()){}
 
-            ssize_t SendFile(int Socket_Fd);//重要的是一次不一定能发完
+            ssize_t SendFile(int Socket_Fd);//重要的是一次不一定能发完 
             bool Send_End() const{ return length == offest;}
 
         private:
-            __off_t length = FileSize();
+            __off_t length = FileSize(); 
             __off_t offest = 0;
     };
-
 }
 
 #endif

@@ -16,7 +16,7 @@ namespace ws{
 
     Web_Server::Web_Server() : _Epoll_(), _Manger_(_Epoll_), _Server_(Y_Dragon::MyPort()){}
 
-    void Web_Server::Running(){
+    void Web_Server::Running(){ 
         try{
             signal(SIGPIPE, SIG_IGN);
             _Server_.Set_AddrRUseP();
@@ -37,6 +37,7 @@ namespace ws{
                     }else if(item.check(EETRDHUP)){
                         _Manger_.Remove(id);
                     }else if(item.check(EETCOULDREAD)){
+                        std::cout << "有可读数据\n";
                         _Manger_.Reading(id);
                         _Manger_.Update(id);
                     }

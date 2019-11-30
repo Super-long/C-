@@ -43,12 +43,12 @@ namespace ws{
         static constexpr char CR = '\r';
         static constexpr char LF = '\n';//http请求头部和请求数据中间是一个空行 /r/n
         static constexpr size_t BufferSize = 7;
-        static constexpr char* ContentLength_key = "Content-Length";
-        static constexpr char* ContentType_key = "Content-Type";
-        static constexpr char* ContentLanguage = "Content-Language";
-        static constexpr char* Connection_key = "Connection";
-        static constexpr char* Keep_alive_value = "Keep-Alive";
-        static constexpr char* Close_value = "Close";
+        static constexpr char* ContentLength_key = (char*)"Content-Length";
+        static constexpr char* ContentType_key = (char*)"Content-Type";
+        static constexpr char* ContentLanguage = (char*)"Content-Language";
+        static constexpr char* Connection_key = (char*)"Connection";
+        static constexpr char* Keep_alive_value = (char*)"Keep-Alive";
+        static constexpr char* Close_value = (char*)"Close";
         char Buffer[BufferSize];
 
 
@@ -141,6 +141,7 @@ namespace ws{
                     If_Conversion(ch == CR, HPSStore_Header);
                     Set_Fault(HPFInvaildHeader_Value);
                 case HPSStore_Header:
+                {
                     ParsedHeader _Header_{Parser_Result->Header, Parser_Result->Header_length};
                     ParsedHeader _Value_ {Parser_Result->Value, Parser_Result->Value_length};
                     Request_Result->Store_Header(_Header_,_Value_);
@@ -170,9 +171,10 @@ namespace ws{
                             }
                         }
                     }
-                    Set_Fault(HPFCRLFCR); //解析结束
-                default:
-                    break;
+                    Set_Fault(HPFCRLFCR); //解析结束 
+                }
+                    default:
+                        break;
             }
             User_Buffer_->Write(1);
         }
