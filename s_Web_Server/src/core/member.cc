@@ -1,17 +1,20 @@
 #include"member.h"
 #include"../tool/userbuffer.h"
 #include<memory>
-
+#include<iostream>
 namespace ws{
     void Member::DoRead(){
         int ret = 0;
-        while(ret = Socket_Ptr->Read(User_Buffer) && ret > 0){}
+
+        //TODU: 这里没有接到东西 
+        while(ret = Socket_Ptr->Read(User_Buffer) && ret > 0){std::cout << ret << std::endl;}
 
         if(Http_Parser_->Finished()){ 
             Http_Parser_->Again_Parser();
         }
-        Http_Parser_->Starting_Parser();//解析
-        if(Http_Parser_->Finished()){ //解析错误也是ok的
+
+        Http_Parser_->Starting_Parser();
+        if(Http_Parser_->Finished()){
             Content_Provider_->Provide();
         }
         Write_Loop_->DoAll();

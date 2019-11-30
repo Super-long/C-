@@ -1,5 +1,6 @@
 #include"manger.h"
 #include"../net/epoll_event.h"
+#include<iostream>
 namespace ws{
     int Manger::Opera_Member(std::unique_ptr<Member>& ptr,EpollEventType& EE){
         int id = ptr->fd();         //RTTI

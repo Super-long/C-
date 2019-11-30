@@ -1,6 +1,6 @@
 #include"socket.h"
 
-
+#include<iostream>
 namespace ws{
     int Socket::Close(){
         int rv = ::close(Socket_fd_);
@@ -19,7 +19,9 @@ namespace ws{
         if(length == -1 || length > ptr->Writeable()){  
             length = ptr->Writeable();
         }
+        //length = 8096  //TODU : 接收失败 晚上测试
         int ret = static_cast<int>(recv(Socket_fd_,ptr->WritePtr(),length,flag));
+        std::cout << "ret : " <<ret << std::endl;//输出-1
         if(ret != -1) ptr->Write(ret);//顺便刷新已接收数据
         return ret;
     }

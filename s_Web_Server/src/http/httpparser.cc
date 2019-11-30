@@ -1,8 +1,10 @@
 #include"httpparser.h"
 #include"httpstatus.h"
+#include"httpstatus.cc"
 
 #include<cstring>
 
+#include<iostream>
 
 namespace ws{
     void HttpParser::Again_Parser(){
@@ -12,25 +14,31 @@ namespace ws{
     }
 
     bool HttpParser::SetRequesting(){
+        //这里开始时没有考虑错误时怎么写
         Request_Result->Set_VMajor(Parser_Result->V_major);
         Request_Result->Set_VMinor(Parser_Result->V_minor);
+
         //Request_Result->Set_CStart(Parser_Result);
         Request_Result->Set_CLength(Parser_Result->Content_length);
-        
         Request_Result->Set_Method(Parser_Result->method);
         Request_Result->Set_Flag(Parser_Result->Set_Ka);
         //Request_Result->Set_StatusCode(Parser_Result->Status);
+
         Request_Result->Set_Fault(Parser_Result->Fault);
-        
+        if(Parser_Result->Uri != nullptr)
         Request_Result->Set_Uri(static_cast<ParsedHeader>(Parser_Result->Uri));
         Request_Result->Set_Request_Buffer(User_Buffer_);
+
     }
 
     HttpParserFault HttpParser::Starting_Parser(){
         if(!Parser_able()){
             Parser_Result->Fault = HPFToLittleMessage;
         }
+        
         Parsering();
+        std::cout << *Parser_Result << std::endl; //TODO : For debugging
+
         if(Parser_Result->Fault == HPFContent){
             if(Parser_Result->Content_length != User_Buffer_->Readable() - 1)
                 Parser_Result->Fault = HPFContent_Nonatch_Length;
@@ -56,10 +64,10 @@ namespace ws{
 #define If_Con_Exe(cond, nextstatus, stm) if(cond) {Parser_Result->Status = nextstatus; {stm}; break;}
 #define Set_Fault(fault) {Parser_Result->Status = HPSGAMEOVER; Parser_Result->Fault = fault; break;}
 
-
+        //TODU:: User_Buffer_ 内为空 
         while(Parser_Result->Status != HPSGAMEOVER && User_Buffer_->Readable()){
             const char ch = User_Buffer_->Peek(0);
-            
+            std::cout << "ch : " << ch << std::endl;
             switch (Parser_Result->Status)
             {
                 case HPSOK:

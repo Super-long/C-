@@ -37,10 +37,10 @@ namespace ws{
                     }else if(item.check(EETRDHUP)){
                         _Manger_.Remove(id);
                     }else if(item.check(EETCOULDREAD)){
-                        std::cout << "有可读数据\n";
                         _Manger_.Reading(id);
                         _Manger_.Update(id);
                     }
+
                 }
                 //TODO :调用时间轮
             }

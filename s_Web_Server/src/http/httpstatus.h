@@ -1,6 +1,8 @@
 #ifndef HTTPSTATUS_H_
 #define HTTPSTATUS_H_
 
+#include<iostream>
+
 namespace ws{
 
     enum HttpStatusCode{
@@ -102,6 +104,8 @@ namespace ws{
 
         HttpFlag Set_Ka = Keep_Alive;
     };
+
+    std::ostream& operator<<(std::ostream& os, const HttpParser_Content& para);
 
     constexpr const char* StatusCode_to_String(int statuscode){
         HttpStatusCode para = static_cast<HttpStatusCode>(statuscode);

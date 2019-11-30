@@ -16,7 +16,7 @@ namespace ws{
     class Socket : public Havefd,Copyable{
         public:
             Socket() : Socket_fd_(socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0)){
-                SetNoblockingCLOEXEC();
+                //SetNoblockingCLOEXEC();
             }
             explicit Socket(int fd) : Socket_fd_(fd){}
             explicit Socket(const Havefd& Hf) : Socket_fd_(Hf.fd()){}

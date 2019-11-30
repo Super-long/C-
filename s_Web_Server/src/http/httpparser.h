@@ -12,7 +12,7 @@ namespace ws{
     class HttpParser : public Nocopy{
         public:
             explicit HttpParser(std::shared_ptr<UserBuffer> ptr):
-                User_Buffer_(std::move(ptr)),Parser_Result(std::make_unique<HttpParser_Content>()){}
+                User_Buffer_(std::move(ptr)),Parser_Result(std::make_unique<HttpParser_Content>()),Request_Result(std::make_shared<HttpRequest>()){}
 
             void Again_Parser();
             HttpParserFault Starting_Parser(); 
