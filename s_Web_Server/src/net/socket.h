@@ -12,7 +12,7 @@
 #include<unistd.h>
 #include<fcntl.h>
 
-namespace ws{
+namespace ws{ 
     class Socket : public Havefd,Copyable{
         public:
             Socket() : Socket_fd_(socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0)){

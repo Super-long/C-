@@ -7,8 +7,8 @@ namespace ws{
         int ret = 0;
 
         //TODU: 这里没有接到东西 
-        while(ret = Socket_Ptr->Read(User_Buffer) && ret > 0){std::cout << ret << std::endl;}
-
+        while((ret = Socket_Ptr->Read(User_Buffer)) > 0){std::cout << ret << std::endl;}
+ 
         if(Http_Parser_->Finished()){ 
             Http_Parser_->Again_Parser();
         }

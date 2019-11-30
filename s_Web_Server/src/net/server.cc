@@ -14,13 +14,18 @@ namespace ws{
     }
 
     void Server::Server_Accept(fun&& f){
-        int ret = 0;
+/*         int ret = 0;
         ret = ::accept4(fd(), nullptr, nullptr, SOCK_NONBLOCK);
         if(ret != -1){
             f(ret);
         }
         else std::cout << "failed connection.\n";
         std::cout << "已接收一个新的连接 fd : " << ret << std::endl; 
+ */
+        for(int _fd; (_fd = accept4(fd(), nullptr, nullptr, SOCK_NONBLOCK)) != -1; ){
+            f(_fd);
+            std::cout << "已接收一个新的连接 fd : " <<_fd << std::endl; 
+        }
     }
 
     void Server::Server_BindAndListen(){ 

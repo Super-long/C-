@@ -1,6 +1,5 @@
 #include"httpparser.h"
 #include"httpstatus.h"
-#include"httpstatus.cc"
 
 #include<cstring>
 
