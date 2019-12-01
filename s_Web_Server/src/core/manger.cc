@@ -67,7 +67,7 @@ namespace ws{
         
         user->Touch(_time_);
     } 
-
+ 
     void Manger::Writing(int fd, long time){
 
     }

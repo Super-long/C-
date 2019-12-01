@@ -32,10 +32,10 @@ namespace ws{
                 return Socket::SetNoblocking(O_CLOEXEC);
             }
 
-            int Read(char* Buffer, int Length, int flag = -1);
-            int Read(std::shared_ptr<UserBuffer>, int length = -1, int flag = -1);
+            int Read(char* Buffer, int Length, int flag = 0);
+            int Read(std::shared_ptr<UserBuffer>, int length = -1, int flag = 0);
 
-            int Write(char* Buffer, int length, int flag = -1);
+            int Write(char* Buffer, int length, int flag = 0);
             //int Read(...)
 
         private:

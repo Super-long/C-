@@ -4,6 +4,7 @@
 #include<assert.h> 
 #include<sys/time.h>
 #include"ws.h"
+#include<errno.h>
 
 namespace ws{
 
@@ -39,8 +40,7 @@ namespace ws{
                     }else if(item.check(EETCOULDREAD)){
                         _Manger_.Reading(id);
                         _Manger_.Update(id); //这里没有考虑完全错误的报文
-                    }
-
+                    } 
                 }
                 //TODO :调用时间轮
             }

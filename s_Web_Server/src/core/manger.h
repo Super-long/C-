@@ -26,7 +26,7 @@ namespace ws{
             int JudgeToClose(int fd);
             int Update(int fd);
 
-            int Remove(int fd); 
+            int Remove(int fd);
             bool Exist(int fd){if(Fd_To_Member.find(fd) != Fd_To_Member.end()) return true; return false;}
 
         private:
@@ -34,7 +34,5 @@ namespace ws{
             std::unordered_map<int,std::unique_ptr<Member>> Fd_To_Member;
     };
 }
-
-
 
 #endif

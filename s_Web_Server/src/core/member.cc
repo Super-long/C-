@@ -4,18 +4,15 @@
 #include<iostream>
 namespace ws{
     void Member::DoRead(){
-        int ret = 0;
+        Socket_Ptr->Read(User_Buffer);
 
-        //TODU: 这里没有接到东西 
-        while((ret = Socket_Ptr->Read(User_Buffer)) > 0){std::cout << ret << std::endl;}
- 
         if(Http_Parser_->Finished()){ 
             Http_Parser_->Again_Parser();
         }
 
         Http_Parser_->Starting_Parser();
         if(Http_Parser_->Finished()){
-            Content_Provider_->Provide();
+            Content_Provider_->Provide(); 
         }
         Write_Loop_->DoAll();
     }

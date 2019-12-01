@@ -11,6 +11,7 @@
 #include"../http/httpparser.h"
 #include"contentprovide.h"
 #include"../net/writeloop.h"
+#include<iostream>
 namespace ws{
     class Member : public Nocopy,public Havefd{
         public:

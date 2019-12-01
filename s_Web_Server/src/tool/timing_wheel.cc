@@ -12,17 +12,17 @@ namespace ws{
 #define FIRST_INDEX(v) ((v) & TVR_MASK)
 #define NTH_INDEX(v, n) (((v) >> (TVR_BITS + (n) * TVN_BITS)) & TVN_MASK)
 
-void TimerWheel::TW_Add(int fd, int ticks){
+void TimerWheel::TW_Add(int fd, Fun& para, int ticks){
     if(ticks < 0) throw std::invalid_argument("'Timer_Wheel::TW_Add' : error parameter."); 
     int ex = currenttime + ticks;
-    _TW_Add_(fd, ex);
+    _TW_Add_(fd, ex, para);
 }
 
-void TimerWheel::_TW_Add_(int fd, int ex){
+void TimerWheel::_TW_Add_(int fd, int ex, Fun& para){
     if(mp.find(fd) != mp.end()) throw std::invalid_argument("'TimerWheel::_TW_Add_ error parameter.'");
     uint32_t ex_ = static_cast<uint32_t>(ex);
     uint32_t idx = ex_ - currenttime;
-    auto ptr = std::make_shared<timernode>(FIRST_INDEX(ex_),fd, ex_);
+    auto ptr = std::make_shared<timernode>(FIRST_INDEX(ex_),fd, ex_, para);
     if(idx < TVR_SIZE){
         ptr->Set_Wheel(0);
         tvroot[FIRST_INDEX(ex_)].emplace_back(std::move(ptr));
@@ -53,21 +53,21 @@ void TimerWheel::TW_Tick(){
         do{
             idx  = NTH_INDEX(currenttime, i);
             for(auto x : tv[i][idx]){
-                TW_Add(x->Return_fd(), static_cast<int>(currenttime - x->Return_expire()));
+                TW_Add(x->Return_fd(), x->Return_Fun(), static_cast<int>(currenttime - x->Return_expire()));
             }
             tv[i][idx].erase(tv[i][idx].begin(), tv[i][idx].end());
         }while (idx == 0 && ++i < 4);
     }
     for(auto x : tvroot[index]){
         int fd = x->Return_fd();
-        std::cout << fd << " have killed.\n";
-        //TODO : 得注册个回调函数 不能这样黑写 得改
+        x->Return_Fun()(fd);
     }
     tvroot[index].erase(tvroot[index].begin(),tvroot[index].end());
 }
 
 void TimerWheel::TW_Update(int fd){
-    TW_Add(fd);
+    Fun& para = (*mp[fd])->Return_Fun();
+    TW_Add(fd,para);
     int solt = (*mp[fd])->Return_solt();
     int wheel = (*mp[fd])->Return_wheel();
     if(!solt){

@@ -16,21 +16,26 @@ namespace ws{
     } 
 
     int Socket::Read(std::shared_ptr<UserBuffer> ptr, int length, int flag){
+        using std::cout;
+        using std::endl;
         if(length == -1 || length > ptr->Writeable()){  
             length = ptr->Writeable();
         }
-        //length = 8096  //TODU : 接收失败  
-        std::cout << "fd : " << Socket_fd_ << std::endl; 
-        int ret = recv(Socket_fd_,ptr->WritePtr(),static_cast<size_t>(length),flag);
-/*         int ret = 0;
-        while(true){ //全部都是接收失败
+        //deepin 15.7 x86 long int
+        ssize_t sum = 0;
+        ssize_t ret = 0;
+        while(true){
             ret = recv(Socket_fd_,ptr->WritePtr(),static_cast<size_t>(length),flag);
-            if(ret == -1 && (errno == EAGAIN || errno == EWOULDBLOCK)) std::cout << "failed\n";
-        } */
-        //printf("errno :%d\n",errno);
-        std::cout << "ret : " << ret << std::endl;//输出-1
-        if(ret != -1) ptr->Write(ret);//顺便刷新已接收数据
-        return ret;
+            //ret = read(Socket_fd_,ptr->WritePtr(),static_cast<size_t>(length));
+            if(ret != -1){
+                sum += ret;
+                ptr->Write(ret);
+                break;
+            }else if(ret < 0 && errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR){
+                continue;
+            }
+        } 
+        return static_cast<int>(ret);
     }
 
     int Socket::Read(char* Buffer, int length, int flag){
