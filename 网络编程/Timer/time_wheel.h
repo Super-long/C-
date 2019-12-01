@@ -53,9 +53,7 @@ namespace Time_Wheel{
                 int ts = (cur_slot + (ticks % N)) %N;//所在槽
                 auto timer = std::make_shared<tw_timer>(rotation,ts);
                 vec[ts].emplace_back(timer);
-                auto x = vec[ts].end();
-                x--; 
-                return x;//返回一个迭代器
+                return --(vec[ts].end());//返回一个迭代器
             }
             void del_timer(itr tmp){ //传一个迭代器进来
                 int ts = tmp->get()->time_solt;

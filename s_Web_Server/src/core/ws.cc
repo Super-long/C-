@@ -31,11 +31,11 @@ namespace ws{
                     auto & item = Event_Reault[i];
                     int id = item.Return_fd();
 
-                    if(id == _Server_.fd()){
+                    if(id == _Server_.fd()){//正常
                         _Server_.Server_Accept([this](int fd){_Manger_.Opera_Member(std::make_unique<Member>(fd),EpollCanRead());});
                         _Epoll_.Modify(_Server_, EpollCanRead());
                     }else if(item.check(EETRDHUP)){
-                        _Manger_.Remove(id);
+                        _Manger_.Remove(id); //正常
                     }else if(item.check(EETCOULDREAD)){
                         _Manger_.Reading(id);
                         _Manger_.Update(id); //这里没有考虑完全错误的报文

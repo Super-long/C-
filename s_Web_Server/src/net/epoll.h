@@ -26,7 +26,7 @@ namespace ws{
             }
             int Modify(EpollEvent&& para){
                 return epoll_ctl(epoll_fd_, EPOLL_CTL_MOD,para.Return_fd(),para.Return_Pointer());
-            }
+            } 
             int Modify(const Havefd& Hf,EpollEventType ETT){
                 return Modify({Hf,ETT});
             }
