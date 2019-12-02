@@ -11,8 +11,8 @@ namespace ws{
 
     class HttpParser : public Nocopy{
         public:
-            explicit HttpParser(std::shared_ptr<UserBuffer> ptr):
-                User_Buffer_(std::move(ptr)),Parser_Result(std::make_unique<HttpParser_Content>()),Request_Result(std::make_shared<HttpRequest>()){}
+            explicit HttpParser(std::shared_ptr<UserBuffer> ptr, std::shared_ptr<HttpRequest> request):
+                User_Buffer_(std::move(ptr)),Parser_Result(std::make_unique<HttpParser_Content>()),Request_Result(request){}
 
             void Again_Parser();
             HttpParserFault Starting_Parser(); 
@@ -24,7 +24,7 @@ namespace ws{
             std::shared_ptr<UserBuffer> User_Buffer_;
             std::unique_ptr<HttpParser_Content> Parser_Result;
             std::shared_ptr<HttpRequest> Request_Result;
-
+ 
             bool Parsering();
             bool Parser_able(){ return User_Buffer_->Readable() >= 16;}
     };

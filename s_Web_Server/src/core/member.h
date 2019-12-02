@@ -29,7 +29,7 @@ namespace ws{
             bool CloseAble() const;
 
             int fd() const final{return Socket_Ptr->fd();} 
-            void Init();
+            void Init(); 
         private:
             std::unique_ptr<HttpParser> Http_Parser_;
             std::shared_ptr<HttpRequest> Http_Request_;

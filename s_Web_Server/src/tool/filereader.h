@@ -2,7 +2,7 @@
 #define _FILEREADER_H_
 
 #include"fileproxy.h"
-#include<string> 
+#include<string>  
 
 namespace ws{
     class FileReader : public FileProxy{

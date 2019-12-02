@@ -38,11 +38,12 @@ namespace ws{
         Parsering();
         std::cout << *Parser_Result << std::endl; //TODO : For debugging
 
-        if(Parser_Result->Fault == HPFContent){
+        //TODO 这部分ok以后去掉
+/*         if(Parser_Result->Fault == HPFContent){
             if(Parser_Result->Content_length != User_Buffer_->Readable() - 1)
                 Parser_Result->Fault = HPFContent_Nonatch_Length;
-        }
-        SetRequesting(); 
+        } */
+        SetRequesting();
         return Parser_Result->Fault;
     }
 
@@ -61,12 +62,13 @@ namespace ws{
 
 #define If_Conversion(cond, nextstatus) if(cond) {Parser_Result->Status = nextstatus; break; }
 #define If_Con_Exe(cond, nextstatus, stm) if(cond) {Parser_Result->Status = nextstatus; {stm}; break;}
+#define C_If_Con_Exe(cond, nextstatus, stm) if(cond) {Parser_Result->Status = nextstatus; {stm}; continue;}
 #define Set_Fault(fault) {Parser_Result->Status = HPSGAMEOVER; Parser_Result->Fault = fault; break;}
 
         //TODU:: User_Buffer_ 内为空 
+        std::cout << "userbuffer all " << User_Buffer_->Readable() << std::endl;
         while(Parser_Result->Status != HPSGAMEOVER && User_Buffer_->Readable()){
             const char ch = User_Buffer_->Peek(0);
-            std::cout << "ch : " << ch << std::endl;
             switch (Parser_Result->Status)
             {
                 case HPSOK:
@@ -79,23 +81,23 @@ namespace ws{
                     Set_Fault(HPFInvaildMethod);
                 case HPSOPTION:
                     User_Buffer_->Read(Buffer,6);
-                    If_Con_Exe(memcmp(Buffer,"PTIONS",6),HPSBetweenMU,Parser_Result->method = HROptions;);
+                    C_If_Con_Exe(!memcmp(Buffer,"PTIONS",6),HPSBetweenMU,Parser_Result->method = HROptions;);
                     Set_Fault(HPFInvaildMethod);
                 case HPSGET:
                     User_Buffer_->Read(Buffer,2);
-                    If_Con_Exe(memcmp(Buffer,"ET",2),HPSBetweenMU,Parser_Result->method = HRGet;);
+                    C_If_Con_Exe(!memcmp(Buffer,"ET",2),HPSBetweenMU,Parser_Result->method = HRGet;);
                     Set_Fault(HPFInvaildMethod);
                 case HPSHEAD:
                     User_Buffer_->Read(Buffer,3);
-                    If_Con_Exe(memcmp(Buffer,"EAD",3),HPSBetweenMU,Parser_Result->method = HRHead;);
+                    C_If_Con_Exe(!memcmp(Buffer,"EAD",3),HPSBetweenMU,Parser_Result->method = HRHead;);
                     Set_Fault(HPFInvaildMethod);
-                case HPSDELETE:
+                case HPSDELETE: 
                     User_Buffer_->Read(Buffer,5);
-                    If_Con_Exe(memcmp(Buffer,"ELETE",5),HPSBetweenMU,Parser_Result->method = HRDELETE;);
+                    C_If_Con_Exe(!memcmp(Buffer,"ELETE",5),HPSBetweenMU,Parser_Result->method = HRDELETE;);
                     Set_Fault(HPFInvaildMethod);
                 case HPSPOST:
                     User_Buffer_->Read(Buffer,3);
-                    If_Con_Exe(memcmp(Buffer,"OST",3),HPSBetweenMU,Parser_Result->method = HRPost;);
+                    C_If_Con_Exe(!memcmp(Buffer,"OST",3),HPSBetweenMU,Parser_Result->method = HRPost;);
                     Set_Fault(HPFInvaildMethod);
                 
                 case HPSBetweenMU:
@@ -112,7 +114,7 @@ namespace ws{
                 case HPSUriEnd:
                     If_Conversion(ch == ' ', HPSUriEnd);
                     User_Buffer_->Read(Buffer,5);
-                    If_Con_Exe(memcmp(Buffer,"HTTP/",5), HPSVersionMajor, ;);
+                    C_If_Con_Exe(!memcmp(Buffer,"HTTP/",5), HPSVersionMajor, ;);
                     Set_Fault(HPFInvaildVersion);
                 case HPSVersionMajor:
                     If_Con_Exe(isdigit(ch), HPSVersionMajor, Parser_Result->V_major*=10;Parser_Result->V_major+=(ch-'0'););
@@ -125,29 +127,29 @@ namespace ws{
                 case HPSVersionEnd:
                     If_Con_Exe(Parser_Result->V_major != 1 || (Parser_Result->V_minor != 1 && Parser_Result->V_minor != 0),
                     HPSGAMEOVER, Parser_Result->Fault = HPFNoSupportVersion;);
-                    If_Conversion(ch == LF, HPSLF);
+                    If_Conversion((ch == LF), HPSLF);
                     Set_Fault(HPFInvaildVersion);
-
                 case HPSLF:
                     If_Conversion(ch == CR, HPSCRLFCR);
-                    If_Con_Exe(isheader(ch), HPSHEAD, Parser_Result->Header = User_Buffer_->ReadPtr(););
+                    If_Con_Exe(isheader(ch), HPSHeader, Parser_Result->Header = User_Buffer_->ReadPtr(););
                     Set_Fault(HPFInvaildHeader);
                 case HPSCRLFCR:
                     If_Con_Exe(ch == LF, HPSGAMEOVER, Parser_Result->Fault = HPFContent;);
                     Set_Fault(HPFCRLFCR);
                 case HPSHeader:
-                    If_Con_Exe(isheader(ch), HPSHEAD, ++(Parser_Result->Header_length););
+                    If_Con_Exe(isheader(ch), HPSHeader, ++(Parser_Result->Header_length););
                     If_Conversion(ch == ':', HPSColon);
                     Set_Fault(HPFInvaildHeader);
                 case HPSColon:
+
                     If_Conversion(ch == ' ', HPSColon);
-                    If_Con_Exe(isvalue(ch), HPSHeader_Value, Parser_Result->Header = User_Buffer_->ReadPtr(););
+                    If_Con_Exe(isvalue(ch), HPSHeader_Value, Parser_Result->Value = User_Buffer_->ReadPtr(););
                     Set_Fault(HPFInvaildHeader);
                 case HPSHeader_Value:
-                    If_Con_Exe(isvalue(ch), HPSHeader_Value, ++(Parser_Result->Header_length););
+                    If_Con_Exe(isvalue(ch), HPSHeader_Value, ++(Parser_Result->Value_length););
                     If_Conversion(ch == CR, HPSStore_Header);
                     Set_Fault(HPFInvaildHeader_Value);
-                case HPSStore_Header:
+                case HPSStore_Header: 
                 {
                     ParsedHeader _Header_{Parser_Result->Header, Parser_Result->Header_length};
                     ParsedHeader _Value_ {Parser_Result->Value, Parser_Result->Value_length};
@@ -172,19 +174,21 @@ namespace ws{
                         for(size_t i = 0; i < len; ++i){
                             if(isdigit(_Value_.Peek(i))){
                                 Parser_Result->Content_length *= 10;
-                                Parser_Result->Content_length = _Value_.Peek(i) - '0';
+                                Parser_Result->Content_length += _Value_.Peek(i) - '0';
                             }else{
                                 Set_Fault(HPFContentLength);
                             }
                         }
                     }
-                    Set_Fault(HPFCRLFCR); //解析结束 
+                    //Set_Fault(HPFCRLFCR); //并没有解析结束
+                    If_Conversion(true, HPSLF);
                 }
                     default:
                         break;
             }
-            User_Buffer_->Write(1);
+            User_Buffer_->read(1);
         }
+        std::cout << "函数结束\n";
         //don't forgit the request object's init.
     }
 }

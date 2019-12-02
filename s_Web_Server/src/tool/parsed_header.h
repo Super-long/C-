@@ -8,6 +8,7 @@
 #include<cstring>
 #include<fstream>
 #include<functional>
+#include<iostream>
 
 namespace ws{
 
@@ -44,6 +45,8 @@ namespace ws{
             bool ParsedHeaderIsEqual(const ParsedHeader& ) const;
             bool ParsedHeaderIsEqual(const char* ) const;
             bool ParsedHeaderIsEqual(const std::string& ) const;
+
+            ~ParsedHeader(){}
 
         private:
             const char* Header;//获取到的指针本来就是智能指针 

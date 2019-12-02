@@ -1,6 +1,7 @@
 #include"socket.h"
 #include<errno.h>
 #include<iostream>
+
 namespace ws{
     int Socket::Close(){
         int rv = ::close(Socket_fd_);
@@ -16,8 +17,7 @@ namespace ws{
     } 
 
     int Socket::Read(std::shared_ptr<UserBuffer> ptr, int length, int flag){
-        using std::cout;
-        using std::endl;
+
         if(length == -1 || length > ptr->Writeable()){  
             length = ptr->Writeable();
         }
@@ -25,17 +25,18 @@ namespace ws{
         ssize_t sum = 0;
         ssize_t ret = 0;
         while(true){
+            std::cout << "循环\n";
             ret = recv(Socket_fd_,ptr->WritePtr(),static_cast<size_t>(length),flag);
             //ret = read(Socket_fd_,ptr->WritePtr(),static_cast<size_t>(length));
+            std::cout << "ret : " << ret << std::endl;
             if(ret != -1){
                 sum += ret;
                 ptr->Write(ret);
+            }else if(ret < 0){//&& errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR
                 break;
-            }else if(ret < 0 && errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR){
-                continue;
             }
         } 
-        return static_cast<int>(ret);
+        return static_cast<int>(sum);
     }
 
     int Socket::Read(char* Buffer, int length, int flag){

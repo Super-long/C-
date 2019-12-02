@@ -6,7 +6,7 @@
 #include"../../tool/filereader.h"   
 #include"../../http/httprequest.h"
 #include"../../tool/parsed_header.h"
-#include<memory>
+#include<memory> 
 
 namespace ws{
 
@@ -14,7 +14,7 @@ namespace ws{
         public:
             REAProvider(std::shared_ptr<HttpRequest> Hr,
                         std::shared_ptr<WriteLoop> Wl) : 
-                        Provider(Hr, Wl){}
+                        Provider(Hr, Wl){} 
             void provide() final;
         private:
             bool FileProvider(std::shared_ptr<FileReader>& file);

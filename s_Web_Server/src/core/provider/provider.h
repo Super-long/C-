@@ -6,13 +6,13 @@
 #include"../../net/writeloop.h"
 #include"../../http/httpstatus.h"
 #include<memory>
-
+#include<iostream>
 
 namespace ws{
     class Provider : public Copyable{
         public:
             Provider(std::shared_ptr<HttpRequest> Hr,
-                     std::shared_ptr<WriteLoop> Wl) : _Request_(std::move(Hr)), _Write_Loop_(std::move(Wl)){}
+                     std::shared_ptr<WriteLoop> Wl) : _Request_(Hr), _Write_Loop_(Wl){}
             int WriteHead(int, int, const HttpStatusCode& );
             //这里应该是协议版本　服务器版本
             int WriteItem(const char*, const char*);
@@ -30,7 +30,7 @@ namespace ws{
             const char* MIME(const char*, ptrdiff_t) const;
             const char* AutoAdapt() const;//用于指定响应数据的类型和编码
             constexpr const char* defaultMIME() const{return "text/html";}//实在是没什么呀
-            bool Good() const {_Request_->Request_good();}
+            bool Good() const {return _Request_->Request_good();}
             bool IsFilename(char) const;
 
 

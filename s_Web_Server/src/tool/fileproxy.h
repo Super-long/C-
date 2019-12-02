@@ -17,7 +17,7 @@ namespace ws{
             ~FileProxy() override;
 
             int fd() const noexcept final {return File_Description;}
-            bool Fd_Good() const noexcept {return File_Description > 0;}
+            bool Fd_Good() const noexcept {return File_Description > -1;}
             __off_t FileSize();
             bool IsTextFile();
 

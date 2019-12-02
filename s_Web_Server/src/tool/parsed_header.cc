@@ -7,7 +7,7 @@ namespace ws{
     bool ParsedHeader::ParsedHeaderIsEqual(const ParsedHeader& para) const{
         if(length != para.Readable()) return false;
         if(memcmp(Header, para.ReadPtr(), length) == 0) return true;
-        return false;
+        return false; 
     }
 
     bool ParsedHeader::ParsedHeaderIsEqual(const char* ptr) const{
