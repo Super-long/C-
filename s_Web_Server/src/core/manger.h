@@ -22,6 +22,7 @@ namespace ws{
             int Opera_Member(std::unique_ptr<Member>&, EpollEventType&&);
             int Opera_Member(std::unique_ptr<Member>&&, EpollEventType&);
             
+            //Signal driven when used.
             void TimeWheel(int fd);
 
             void Reading(int fd, long time = -1); 
