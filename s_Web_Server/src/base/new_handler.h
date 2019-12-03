@@ -1,5 +1,7 @@
-#include<bits/stdc++.h>
-using namespace std;
+#ifndef NEW_HANDLER_H_
+#define NEW_HANDLER_H_
+
+#include<new>
 
 //typedef void (*new_handler)();
 
@@ -20,6 +22,7 @@ template<typename Type>
 class Base_Newhandler{
     public:
         static std::new_handler Set_new_handler(std::new_handler) throw();
+
         template<typename... Args>
         static void* operator new(size_t s, const Args&&... args){
             NewhSupport Temp(std::set_new_handler(Current_Hander_));
@@ -47,19 +50,5 @@ class Demo public : Base_Newhandler<Demo>{
 } 
 */
 
-class hello : public Base_Newhandler<hello>{
-    public:
-        hello(int xx, double yy) : x(xx), y(yy){}
-        void show() const noexcept{
-            std::cout << x << " " << y << endl;
-        }
-    private:
-        int x;
-        double y;
-};
 
-int main(){
-    auto T = new hello(10,15.2);
-    T->show();
-    return 0;
-}
+#endif

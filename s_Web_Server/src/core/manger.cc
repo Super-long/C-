@@ -1,6 +1,7 @@
 #include"manger.h"
 #include"../net/epoll_event.h"
 #include<functional>
+#include<sys/socket.h>
 
 namespace ws{
     int Manger::Opera_Member(std::unique_ptr<Member>& ptr,EpollEventType& EE){
@@ -74,7 +75,7 @@ namespace ws{
     void Manger::TimeWheel(int fd){
         using std::placeholders::_1;
         if(Exist(fd)) Timer_Wheel_->TW_Update(fd);
-        else Timer_Wheel_->TW_Add(fd, ::bind(Remove, *this, _1));
+        else Timer_Wheel_->TW_Add(fd, std::bind(&Remove, *this, _1));
     } 
 
     void Manger::Writing(int fd, long time){
