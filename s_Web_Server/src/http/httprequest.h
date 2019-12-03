@@ -6,7 +6,6 @@
 #include"../tool/userbuffer.h"
 #include"../tool/parsed_header.h"
 #include"httpstatus.h"
-#include<iostream>
 
 namespace ws{
 
@@ -20,7 +19,7 @@ namespace ws{
             void Set_CLength(size_t len){ Content_Length = len;}
 
             void Set_Method(const HttpRequestMethod& method){ Method_  = method;}
-            //TODO
+ 
             void Set_Flag(HttpFlag flag){ Flag_ = flag;}
             void Set_StatusCode(const HttpStatusCode& status){ StatusCode_ = status;}
             void Set_Fault(const HttpParserFault& fault){Fault_ = fault;}
@@ -44,7 +43,7 @@ namespace ws{
             std::shared_ptr<UserBuffer> Return_RBuffer(){return Request_Buffer_;}
             //The above is the return of the base data.
 
-            void Store_Header(ParsedHeader, ParsedHeader);
+            void Store_Header(const ParsedHeader&, const ParsedHeader&);
             ParsedHeader Get_Value(const ParsedHeader&) const;
 
             bool Request_good() const{return Fault_ == HPFContent;}

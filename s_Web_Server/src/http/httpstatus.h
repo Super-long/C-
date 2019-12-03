@@ -149,10 +149,10 @@ namespace ws{
     }
  inline bool isheader(char c) {
     return isalnum(c) || c == '-' || c == '_';
-    }//判断为字母或是数字
+    }
 
 
-    inline bool isuri(char c) { //娄神真厉害
+    inline bool isuri(char c) {
     static bool isuri[] = {
     /*0   nul    soh    stx    etx    eot    enq    ack    bel     7*/
         false, false, false, false, false, false, false, false,

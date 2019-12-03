@@ -47,7 +47,7 @@ namespace ws{
  
             bool Send(int length);
             bool SendFile(std::shared_ptr<FileReader>);
-            void InsertSend(int len){Que.emplace_front([this,len] {return Send(len);});} //巧妙　知道为什么要用双端队列了
+            void InsertSend(int len){Que.emplace_front([this,len] {return Send(len);});}
             void InsertSendFile(const std::shared_ptr<FileReader>& ptr) {Que.emplace_back([this, ptr]{return SendFile(ptr);});}
     };
 }

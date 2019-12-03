@@ -1,7 +1,7 @@
 #include"member.h"
 #include"../tool/userbuffer.h"
 #include<memory>
-#include<iostream>
+
 namespace ws{
     void Member::DoRead(){
         Socket_Ptr->Read(User_Buffer);
@@ -10,9 +10,8 @@ namespace ws{
             Http_Parser_->Again_Parser();
         }
 
-        Http_Parser_->Starting_Parser();
+        Http_Parser_->Starting_Parser(); 
         if(Http_Parser_->Finished()){
-            std::cout << "开始provide\n";
             Content_Provider_->Provide(); 
         }
         Write_Loop_->DoAll();

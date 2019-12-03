@@ -7,6 +7,7 @@
 #include"provider/provider.h"
 #include"provider/reaprovider.h"
 #include<memory>
+
 namespace ws{
 
     class ContentProvider : public Nocopy{

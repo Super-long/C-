@@ -57,9 +57,9 @@ namespace ws{
     
     struct ParseHeaderHash{
         size_t operator()(const ParsedHeader& ptr) const {
-            return std::hash<const char*>()(ptr.ReadPtr());
+            return std::hash<const char*>()(ptr.ReadPtr()) + std::hash<size_t>()(ptr.Readable());
         }
-    }; 
+    };
 }
 
 

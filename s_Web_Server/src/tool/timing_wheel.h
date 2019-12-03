@@ -34,9 +34,11 @@ namespace ws{
         using TVN_ = std::list<std::shared_ptr<timernode>>[256];
         using TVR_ = std::list<std::shared_ptr<timernode>>[64];
         public:
+            using Fun = std::function<int(int)>;
+
             TimerWheel() : currenttime(0){} 
 
-            void TW_Add(int fd, Fun&, int ticks = 2); //传进来一个fd和其删除函数
+            void TW_Add(int fd, Fun, int ticks = 2);
             void TW_Tick();
             void TW_Update(int fd);
 

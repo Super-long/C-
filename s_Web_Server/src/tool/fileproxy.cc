@@ -6,7 +6,7 @@
 
 namespace ws{
 
-    void FileProxy::Statget(){ //这个设计理念没有大懂 
+    void FileProxy::Statget(){
         if(!stat_){
             stat_ = std::make_unique<struct stat>();
             fstat(File_Description, stat_.get());
@@ -25,11 +25,13 @@ namespace ws{
     }
 
     FileProxy::~FileProxy(){
-        ::close(File_Description); //非异常安全
+        ::close(File_Description);
     }
 
-    //在path1 中搜寻path2
     FileProxy::FileProxy(const FileProxy& path1, const char* path2) : 
-        File_Description(openat(path1.fd(), path2, O_RDONLY)){}
+        File_Description(openat(path1.fd(), path2, O_RDONLY)){
+        //File_Description(openat(AT_FDCWD, path2, O_RDONLY)){
+        //File_Description(open(path2, O_RDONLY)){
+        }
 
 }

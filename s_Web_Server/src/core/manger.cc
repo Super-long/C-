@@ -1,6 +1,6 @@
 #include"manger.h"
 #include"../net/epoll_event.h"
-#include<iostream>
+
 namespace ws{
     int Manger::Opera_Member(std::unique_ptr<Member>& ptr,EpollEventType& EE){
         int id = ptr->fd();         //RTTI
@@ -42,7 +42,7 @@ namespace ws{
         if(!Exist(fd)){
             throw std::invalid_argument("'Manger::Update' Don't have this fd.");
         }
-        _Epoll_.Modify(*Fd_To_Member[fd],EpollTypeBase());
+        _Epoll_.Modify(*Fd_To_Member[fd],EpollCanRead());
     }
 
     int Manger::JudgeToClose(int fd){
@@ -55,6 +55,8 @@ namespace ws{
             _Epoll_.Remove(static_cast<EpollEvent>(fd));
             auto temp = Fd_To_Member.find(fd);
             Fd_To_Member.erase(temp);
+        }else {
+            Update(fd);
         }
     }
 
@@ -62,12 +64,18 @@ namespace ws{
         if(!Exist(fd)){
             throw std::invalid_argument("'Manger::Reading' Don't have this fd.");
         }
-        auto& user = Fd_To_Member[fd];//得到相关连接的信息
+        auto& user = Fd_To_Member[fd];
         user->DoRead();
         
         user->Touch(_time_);
     } 
- 
+
+    //TODO : 使用成员函数绑定bind
+    void Manger::TimeWheel(int fd){
+        if(Exist(fd)) Timer_Wheel_->TW_Update(fd);
+        else Timer_Wheel_->TW_Add(fd, ::bind(Remove));
+    } 
+
     void Manger::Writing(int fd, long time){
 
     }

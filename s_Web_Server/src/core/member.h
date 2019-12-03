@@ -11,13 +11,13 @@
 #include"../http/httpparser.h"
 #include"contentprovide.h"
 #include"../net/writeloop.h"
-#include<iostream>
+
 namespace ws{
     class Member : public Nocopy,public Havefd{
         public:
             Member(int fd, long time = -1l) : Socket_Ptr(std::make_unique<Socket>(fd)),Time_Spot(time){Init();}
             Member(std::unique_ptr<Socket>&& ptr, long time = -1l) : Time_Spot(time){
-                Init(); //抛错也不要紧
+                Init();
                 std::swap(Socket_Ptr,ptr);
             }
             Member() = delete;

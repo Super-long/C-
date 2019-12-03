@@ -5,6 +5,7 @@
 #include"epoll_event_result.h"
 #include"../base/nocopy.h"
 #include"../base/havefd.h"
+#include<iostream>
 
 namespace ws{
     class Epoll final : public Nocopy,Havefd{
@@ -32,9 +33,11 @@ namespace ws{
             }
             
             int Remove(EpollEvent& para){
+                std::cout << "已断开一个连接 : " << epoll_fd_ << std::endl;
                 return epoll_ctl(epoll_fd_, EPOLL_CTL_DEL,para.Return_fd(),para.Return_Pointer());
             }
             int Remove(EpollEvent&& para){
+                std::cout << "已断开一个连接 : " << epoll_fd_ << std::endl;
                 return epoll_ctl(epoll_fd_, EPOLL_CTL_DEL,para.Return_fd(),para.Return_Pointer());
             }
             int Remove(const Havefd& Hf,EpollEventType ETT){
@@ -44,8 +47,9 @@ namespace ws{
             void Epoll_Wait(EpollEvent_Result& ETT){
                 Epoll_Wait(ETT,-1);
             }
+
             void Epoll_Wait(EpollEvent_Result& ETT,int timeout){
-                int Available_Event_Number_ =                           //可以逐字节转化的原因是类中无其他元素
+                int Available_Event_Number_ =
                     epoll_wait(epoll_fd_,reinterpret_cast<epoll_event*>(ETT.array.get()),ETT.All_length,timeout);
                 ETT.Available_length = Available_Event_Number_;
             }

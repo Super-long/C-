@@ -2,7 +2,6 @@
 #include"provider.h"
 #include"../../http/httpstatus.h"
 
-
 namespace ws{
     bool Provider::IsFilename(char x) const {
         return !(x == '?' || x == '\\' || x == '/' || x == '*' ||
@@ -18,7 +17,7 @@ namespace ws{
 
     int Provider::WriteDate(){
         time_t t = time(nullptr);
-        char buf[100]; //很好的计算时间的函数
+        char buf[100];
         strftime(buf, 70, "Date: %a, %d %b %Y %H: %M:%S GMT\r\n", gmtime(&t));
         return _Write_Loop_->swrite(buf);
     }
@@ -36,7 +35,6 @@ namespace ws{
         return _Write_Loop_->swrite("/r/n", 2);
     } 
 
-    //TODO : 我好像还没设置statuscode
     int Provider::RegularProvide(long Content_Length, const char* Content_Type){
         int ret = WriteHead(_Request_->Return_Version_Ma(),_Request_->Return_Version_Mi(),
         _Request_->Return_Statuscode());
@@ -47,7 +45,6 @@ namespace ws{
         return ret;
     }
 
-    //其实这是一个解析
     const char* Provider::AutoAdapt() const{
         const char* Start = _Request_->Return_Uri().ReadPtr() +_Request_->Return_Uri().Length();
         const char* End = Start;
@@ -72,7 +69,6 @@ namespace ws{
 
     }
 
-    //说实话 不清楚错误该怎么回复
     int Provider::ProvideError(){
         static constexpr const char temp[] = "<html><head><title>Transgate/HTTP Error</title></head>";
         size_t len = strlen(temp);

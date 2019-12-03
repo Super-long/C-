@@ -1,9 +1,6 @@
 #include"httpparser.h"
 #include"httpstatus.h"
-
 #include<cstring>
-
-#include<iostream>
 
 namespace ws{
     void HttpParser::Again_Parser(){
@@ -13,7 +10,7 @@ namespace ws{
     }
 
     bool HttpParser::SetRequesting(){
-        //这里开始时没有考虑错误时怎么写
+
         Request_Result->Set_VMajor(Parser_Result->V_major);
         Request_Result->Set_VMinor(Parser_Result->V_minor);
 
@@ -25,7 +22,7 @@ namespace ws{
 
         Request_Result->Set_Fault(Parser_Result->Fault);
         if(Parser_Result->Uri != nullptr)
-        Request_Result->Set_Uri(static_cast<ParsedHeader>(Parser_Result->Uri));
+        Request_Result->Set_Uri({Parser_Result->Uri, Parser_Result->Uri_length});
         Request_Result->Set_Request_Buffer(User_Buffer_);
 
     }
@@ -36,9 +33,9 @@ namespace ws{
         }
         
         Parsering();
-        std::cout << *Parser_Result << std::endl; //TODO : For debugging
+        //std::cout << *Parser_Result << std::endl; //TODO : For debugging
 
-        //TODO 这部分ok以后去掉
+        //TODO 
 /*         if(Parser_Result->Fault == HPFContent){
             if(Parser_Result->Content_length != User_Buffer_->Readable() - 1)
                 Parser_Result->Fault = HPFContent_Nonatch_Length;
@@ -49,7 +46,7 @@ namespace ws{
 
     bool HttpParser::Parsering(){
         static constexpr char CR = '\r';
-        static constexpr char LF = '\n';//http请求头部和请求数据中间是一个空行 /r/n
+        static constexpr char LF = '\n';
         static constexpr size_t BufferSize = 7;
         static constexpr char* ContentLength_key = (char*)"Content-Length";
         static constexpr char* ContentType_key = (char*)"Content-Type";
@@ -65,8 +62,7 @@ namespace ws{
 #define C_If_Con_Exe(cond, nextstatus, stm) if(cond) {Parser_Result->Status = nextstatus; {stm}; continue;}
 #define Set_Fault(fault) {Parser_Result->Status = HPSGAMEOVER; Parser_Result->Fault = fault; break;}
 
-        //TODU:: User_Buffer_ 内为空 
-        std::cout << "userbuffer all " << User_Buffer_->Readable() << std::endl;
+
         while(Parser_Result->Status != HPSGAMEOVER && User_Buffer_->Readable()){
             const char ch = User_Buffer_->Peek(0);
             switch (Parser_Result->Status)
@@ -151,6 +147,7 @@ namespace ws{
                     Set_Fault(HPFInvaildHeader_Value);
                 case HPSStore_Header: 
                 {
+                    
                     ParsedHeader _Header_{Parser_Result->Header, Parser_Result->Header_length};
                     ParsedHeader _Value_ {Parser_Result->Value, Parser_Result->Value_length};
                     Request_Result->Store_Header(_Header_,_Value_);
@@ -180,7 +177,6 @@ namespace ws{
                             }
                         }
                     }
-                    //Set_Fault(HPFCRLFCR); //并没有解析结束
                     If_Conversion(true, HPSLF);
                 }
                     default:
@@ -188,7 +184,12 @@ namespace ws{
             }
             User_Buffer_->read(1);
         }
-        std::cout << "函数结束\n";
-        //don't forgit the request object's init.
+
     }
+
+#undef If_Conversion
+#undef If_Con_Exe
+#undef C_If_Con_Exe
+#undef Set_Fault
+
 }

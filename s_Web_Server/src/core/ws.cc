@@ -4,7 +4,6 @@
 #include<assert.h> 
 #include<sys/time.h>
 #include"ws.h"
-#include<errno.h>
 
 namespace ws{
 
@@ -32,17 +31,17 @@ namespace ws{
                     auto & item = Event_Reault[i];
                     int id = item.Return_fd();
 
-                    if(id == _Server_.fd()){//正常
+                    if(id == _Server_.fd()){
                         _Server_.Server_Accept([this](int fd){_Manger_.Opera_Member(std::make_unique<Member>(fd),EpollCanRead());});
                         _Epoll_.Modify(_Server_, EpollCanRead());
                     }else if(item.check(EETRDHUP)){
-                        _Manger_.Remove(id); //正常
+                        _Manger_.Remove(id);
                     }else if(item.check(EETCOULDREAD)){
                         _Manger_.Reading(id);
-                        _Manger_.Update(id); //这里没有考虑完全错误的报文
+                        _Manger_.JudgeToClose(id);
                     } 
                 }
-                //TODO :调用时间轮
+                //TODO : Using Time wheel
             }
         } catch (std::exception& err){
             std::cout << err.what() << std::endl;
