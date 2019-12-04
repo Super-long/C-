@@ -22,6 +22,7 @@ class Base_Newhandler{
         static std::new_handler Set_new_handler(std::new_handler) throw();
         template<typename... Args>
         static void* operator new(size_t s, const Args&&... args){
+            cout << "size : " << s << endl;
             NewhSupport Temp(std::set_new_handler(Current_Hander_));
             return ::operator new(s, std::forward<Args>(args)...); //restore global new-handler   
         }
@@ -56,10 +57,12 @@ class hello : public Base_Newhandler<hello>{
     private:
         int x;
         double y;
+        double c;
 };
 
 int main(){
     auto T = new hello(10,15.2);
     T->show();
+    int *a = new int(5);
     return 0;
 }
