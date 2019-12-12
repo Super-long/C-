@@ -29,6 +29,7 @@ int main(){
         a.join();
     b.join();
     c.join();*/
+    //原子量中的操作表示这个操作使用的内存序
     getchar();
     cout << "result : " << al << endl;
     return 0;
