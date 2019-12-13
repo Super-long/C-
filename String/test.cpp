@@ -4,14 +4,20 @@ using namespace std;
 int main(){
     auto ch = char();
     string str1 = "hello";
-    string str4(str1,2);
-    string str2(str1,2,3);
-    allocator<char> chr;
-    auto const o = chr.allocate(10);
-    str2.push_back('2');
-    string str3(chr);
-    str3.push_back('2');
-    //cout << str3 << endl;
-    //cout << ch << endl;
-    cout << str4 << endl;
+    string str2;
+    
+    cout << str2.capacity() << endl;
+    cout << str2.size() << endl;
+    str2.reserve(80);
+    cout << str2.capacity() << endl;
+    cout << str2.size() << endl;
+ /*    cout << str1.capacity() << endl;
+    cout << str1.size() << endl;
+    str1.shrink_to_fit();
+    cout << str1.capacity() << endl;
+    cout << str1.size() << endl;
+    //string(str1).swap(str1);
+    str1.reserve(16);
+    cout << str1.capacity() << endl;
+    cout << str1.size() << endl; */
 }
