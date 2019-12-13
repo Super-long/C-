@@ -12,8 +12,29 @@ namespace String{
             Alloc _alloc_;
             Traits _traits_;//这个成员需要吗 我们只需要函数
             size_type _String_length;
+
+            enum {initial_capacity = 15 / sizeof(type)};
+
+            union{
+                type initial_buf[static_cast<int>(initial_capacity)];
+                size_type alloc_capacity;
+            };
+
+        private:
+/*------------------------------------------------*/
+        //Following is to encapsulate the interface inplementation.  
+
+/**
+ *  _S_expansion() is for apply for new capacity and delete old 
+    buffers as capacity increases.
+ *  which has meaningless calculations I think.
+ */
+        void _S_expansion(size_type pos, size_type len1, const type* para, size_type len2);    
+        
         
         public:
+/*------------------------------------------------*/
+        //Following is a constructor part.
             Basic_string() : _traits_(Traits()), _alloc_(Alloc())
             {} //TODO: is a default construct function.
 
@@ -79,7 +100,6 @@ namespace String{
 
             }
 
-        //The above is a constructor part.
 /*------------------------------------------------*/
         //Following is a capacity function.
 
@@ -199,8 +219,20 @@ namespace String{
 #endif
 
 /*------------------------------------------------*/
-    //Following is a Element access.
+    //Following is a Member constants.
 
+static const size_type	npos = static_cast<size_type>(-1);
+
+/*------------------------------------------------*/
+    //Following is a Member Modifiers.
+
+
+/*------------------------------------------------*/
+    //Following is a String operations
+
+
+/*------------------------------------------------*/
+    //Following is a Non-member function overloads
 
         /*
         template <class Type> struct rebind {
@@ -224,8 +256,8 @@ namespace String{
             using const_pointer = typename _Alloc_traits::const_pointer;
     
             //TODU 迭代器和反向迭代器
-
-            static const size_type	npos = static_cast<size_type>(-1);
+        
+        
         };
     
 }
