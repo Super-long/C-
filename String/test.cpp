@@ -7,12 +7,16 @@ int main(){
     auto ch = char();
     string str1 = "hello";
     string str2;
-    
-    cout << str2.capacity() << endl;
+    allocator<int>a;
+    auto ptr = a.allocate(20);
+    a.deallocate(ptr,20);
+    cout << a.max_size() << endl;
+
+/*     cout << str2.capacity() << endl;
     cout << str2.size() << endl;
     str2.reserve(80);
     cout << str2.capacity() << endl;
-    cout << str2.size() << endl;
+    cout << str2.size() << endl; */
  /*    cout << str1.capacity() << endl;
     cout << str1.size() << endl;
     str1.shrink_to_fit();
