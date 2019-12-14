@@ -6,12 +6,16 @@ using namespace std;
 int main(){
     auto ch = char();
     string str1 = "hello";
-    string str2;
+    string str2 = "sda";
+    str2.append(str1);
+    cout << str2 << endl;
     allocator<int>a;
     auto ptr = a.allocate(20);
+    ptr[0] = 'c';
+    cout << ptr[0] << endl;
     a.deallocate(ptr,20);
-    cout << a.max_size() << endl;
-
+/*     cout << a.max_size() << endl; */
+    cout << static_cast<int>(str2.front()) << endl;
 /*     cout << str2.capacity() << endl;
     cout << str2.size() << endl;
     str2.reserve(80);

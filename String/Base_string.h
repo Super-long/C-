@@ -61,7 +61,7 @@ namespace String{
         }
 
         bool _Data_is_local() const noexcept{
-            return _True_value == initial_buf;
+            return _Return_pointer() == _Return_local_pointer();
         }
 
         void _S_SetUp_date(pointer p_) noexcept{
@@ -229,12 +229,11 @@ namespace String{
             void 
             shrink_to_fit() noexcept{
                 if(capacity() > size()){
-                    //这个函数 库中的实现太sb了 
+                    //TODO:这个函数 库中的实现太sb了 
                 }
             }
 #endif
-            //容量初始15 reserve15-30之间为30 以上参数多少是多少
-            void reserve(size_type inital_cap);
+            void reserve(size_type _ideal);
 
             void clear() noexcept{
                 _String_length = 0;
@@ -256,16 +255,14 @@ namespace String{
             operator[](size_type pos) const{
                 if(pos > this->size())
                     throw std::out_of_range("'String[] 136行' out of range.");
-                //TODO: Not sure where the value exists now.
-                //return 
+                return _Return_pointer()[pos];
             }
 
-            //
             reference 
             operator[](size_type pos){
                 if(pos > this->size())
                     throw std::out_of_range("'String[] 144行' out of range.");
-                //TODO
+                return _Return_pointer()[pos];
             }
 
 /**
@@ -275,7 +272,7 @@ namespace String{
             at(size_type n) const{
                 if(pos > this->size())
                     throw std::out_of_range("'String[] 158行' out of range.");
-                //TODO
+                return _Return_pointer()[pos];
             }
 
 /**
@@ -285,29 +282,37 @@ namespace String{
             at(size_type n){
                 if(pos > this->size())
                     throw std::out_of_range("'String[] 158行' out of range.");
-                //TODO
+                return _Return_pointer()[pos];
             }
 
 #if __cplusplus >= 201103L
 
         reference
         front() noexcept{
-            
+            if(!this->empty())
+            return at(0);
+            return at(0);
         }
 
         const_reference
         front() const noexcept{
-
+            if(!this->empty())
+            return at(0);
+            return at(0);
         }
 
         reference
         back() noexcept{
-
+            if(!this->empty())
+            return at(this->length() - 1);
+            return at(0);
         }
 
         const_reference
         back() const noexcept{
-
+            if(!this->empty())
+            return at(this->length() - 1);
+            return at(0);
         }
 
 #endif

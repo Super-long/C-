@@ -44,7 +44,7 @@ namespace String{
         _S_Delete();
         _S_SetUp_date(ptr);
         _S_SetUp_capacity(new_capacity); 
-    }//可以尝试用智能指针去管理alloctor分配的内存 
+    }
 
     template<typename type, typename Traits, typename Alloc>
     typename Basic_string<type, Traits, Alloc>::pointer
@@ -95,6 +95,31 @@ namespace String{
         }
         if(n) _S_assign(_Return_pointer(), n, para);
         _S_SetUp_length(n);
+    }
+
+    template<typename type, typename Traits, typename Alloc>
+    void Basic_string<type, Traits, Alloc>::
+    reserve(size_type _ideal){
+        //We can't shrink capacity.
+        if(_ideal < this->length())
+            _ideal = this->length();
+        
+        const size_type _capacity = capacity();
+        
+        if(_ideal != _capacity){
+            if(_ideal > _capacity
+            || _ideal > static_cast<size_type>(initial_capacity)){
+                pointer ptr = _S_create(_ideal, _capacity);
+                this->S_copy_(ptr, _Return_pointer(), length());
+                _S_Delete();
+                _S_SetUp_date(ptr);
+                _S_SetUp_capacity(_ideal);
+            }else if(!_Data_is_local()){
+                this->S_copy_(_Return_local_pointer(), _Return_pointer(), length());
+                _S_Delete();
+                _S_SetUp_date(_Return_local_pointer());
+            }
+        }
     }
 
 }
