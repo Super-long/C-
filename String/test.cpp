@@ -1,6 +1,8 @@
 #include<bits/stdc++.h>
 using namespace std;
 
+//http://man7.org
+
 int main(){
     auto ch = char();
     string str1 = "hello";
