@@ -174,12 +174,84 @@ namespace String{
         return *this;
     }
 
+    //TODO: The function is incomplete.
     template<typename type, typename Traits, typename Alloc>
     Basic_string<type, Traits, Alloc>&
     Basic_string<type, Traits, Alloc>::
     _S_replace(size_type pos, size_type len1, type* para, size_type len2){
-        size_type new_capacity = length() + len2 - len1;
-         
+        size_type new_length = length() + len2 - len1;
+        size_type old_capacity = length();
+
+        if(new_length <= old_capacity){
+            if(_Data_is_local())
+                this->S_copy_(_Return_local_pointer(), para + len1, len2 - len1);
+            else 
+                this->S_copy_(_Return_pointer(), para + len1, len2 - len1);
+                //capacity is changeless.
+                //But in standard library, if the length is reduced, the capacity will reduced.  
+                //Why I don't perfect this function, Because I'm so lazy.
+        }else{
+            _S_expansion(pos, len1, para, len2);
+        }
+        _S_SetUp_length(new_length);
+
+        return *this;
+    }
+
+    template<typename type, typename Traits, typename Alloc>
+    Basic_string<type, Traits, Alloc>&
+    Basic_string<type, Traits, Alloc>::
+    _S_replace(size_type n, const type& ch){
+        size_type new_length = n + length();
+        size_type old_length = length();
+        if(new_length > capacity()){
+            _S_expansion(length(),0 ,0 ,n);
+            if(_Data_is_local())
+                traits::assign(_Return_pointer(), n, ch);
+            else 
+                traits::assign(_Return_local_pointer(), n, ch);            
+        }else{
+            if(_Data_is_local())
+                traits::assign(_Return_pointer(), n, ch);
+            else 
+                traits::assign(_Return_local_pointer(), n, ch);
+        }
+        _S_SetUp_length(new_length);
+
+        return *this;
+    }
+
+
+    template<typename type, typename Traits, typename Alloc>
+    void 
+    Basic_string<type, Traits, Alloc>::
+    _S_erase(size_type pos, size_type n){
+        const size_type len = length() - pos - n;
+        pointer ptr_l = _Return_local_pointer();
+        pointer ptr_nl = _Return_pointer();
+        if(len && n){
+            if(_Data_is_local());
+                _S_move(ptr_l + pos, ptr_l + pos + n, len);
+            else
+                _S_move(ptr_nl + pos, ptr_nl + pos + n, len);
+        }
+        _S_SetUp_length(pos);
+    }
+
+    template<typename type, typename Traits, typename Alloc>
+    void 
+    Basic_string<type, Traits, Alloc>::
+    Swap(const Basic_string& str) noexcept {
+        bool lhs_local = _Data_is_local();
+        bool rhs_local = str._Data_is_local();
+        if(lhs_local && rhs_local){
+            std::swap(_Return_local_pointer(), str._Return_local_pointer());
+        }else if(!lhs_local && !rhs_local){
+            std::swap(_Return_pointer(), str._Return_pointer());
+        }else{
+            std::swap(_Return_local_pointer(), str._Return_local_pointer());
+            std::swap(_Return_pointer(), str._Return_pointer());
+        }
     }
 
 }

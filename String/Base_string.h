@@ -140,12 +140,24 @@ namespace String{
                 traits::assign(ptr, n, ch);
         }
 
+        static void _S_move(type* lhs, const type* rhs, size_type n){
+            if(n == 1){
+                traits::assign(*lhs, *rhs);
+            }else{
+                traits::move(lhs ,rhs, n); 
+            }
+        }
+
+        //_S_replace() function in standard library is quite complicated. 
         Basic_string& _S_replace(size_type pos, size_type len1, type* para, size_type len2);
+
+        Basic_string& _S_replace(size_type n, const type& ch);
 
         Basic_string& _S_append(const type* str, size_type n);
 
         Basic_string& _S_append(size_type n, type ch);
 
+        void _S_erase(size_type pos, size_type n);
 
         public:
 /*------------------------------------------------*/
@@ -438,6 +450,10 @@ static const size_type	npos = static_cast<size_type>(-1);
         return _S_append(n, ch);
     }
 
+    Basic_string& append(const type& ch){
+        return _S_append(1, ch);
+    }
+
 #if __cplusplus >= 201103L
     Basic_string& append(initializer_list<type> list){
 
@@ -475,11 +491,57 @@ static const size_type	npos = static_cast<size_type>(-1);
     }
 
 #endif 
-
+    
+    //I didn't do boundary check. Because I'm so lazy.
     Basic_string& assign(const Basic_string& str, size_type pos, size_type n){
-
+        if(str._Data_is_local())
+            return this->_S_replace(length(), 0, _Return_local_pointer(), str.length());
+        return this->_S_replace(length(), 0, _Return_pointer(), str.length());
     }
 
+    Basic_string& assign(const type* str, size_type n){
+        return this->_S_replace(length(), 0, str, n);
+    }
+
+    Basic_string& assign(const type* str){
+        return this->_S_replace(length(), 0, str, strlen(str));
+    }
+
+    Basic_string& assign(size_type n, const type& ch){
+        return this->_S_replace(n, ch);
+    }
+
+    //TODO 和append一样 对于列表初始化和string_view都没有实现.
+    //...
+    //insert erase replace 涉及到迭代器 现在还没办法写 
+    //迭代器板块还没写
+    
+
+#if __cplusplus >= 201103L
+    void pop_back() noexcept{
+        if(empty()) throw std::exception("'String pop_back' String is empty.")
+        _S_erase(length() - 1, 1);
+    }
+
+#endif 
+
+
+    void Swap(const Basic_string& str) noexcept;
+
+    Basic_string& 
+    operator+=(const Basic_string& str){
+        return this->append(str);
+    }
+
+    Basic_string& 
+    operator+=(type* str){
+        return this->append(str);
+    }
+
+    Basic_string& 
+    operator+=(type ch){
+        return this->append(ch);
+    }
 
 /*------------------------------------------------*/
     //Following is a String operations
@@ -488,8 +550,17 @@ static const size_type	npos = static_cast<size_type>(-1);
 /*------------------------------------------------*/
     //Following is a Non-member function overloads
 
-        };
+
+    };
+
+    template<typename type, typename Traits, typename Alloc>
+    void swap(Basic_string<type, Traits, Alloc>& lhs,
+            Basic_string<type, Traits, Alloc>& rhs){
+                a.Swap(b);
+            }
     
 }
+
+
 
 #endif
