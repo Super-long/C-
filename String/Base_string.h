@@ -7,6 +7,8 @@
 #include<cstring>
 #include<ext/alloc_traits.h>
 #include<ext/atomicity.h>
+#include<ostream>
+#include<istream>
 
 #include<iostream>
 using std::cout;
@@ -512,10 +514,10 @@ static const size_type	npos = static_cast<size_type>(-1);
     }
 
     //TODO 和append一样 对于列表初始化和string_view都没有实现.
-    //...
+    //resize 也没写
     //insert erase replace 涉及到迭代器 现在还没办法写 
     //迭代器板块还没写
-    
+
 
 #if __cplusplus >= 201103L
     void pop_back() noexcept{
@@ -550,6 +552,74 @@ static const size_type	npos = static_cast<size_type>(-1);
 /*------------------------------------------------*/
     //Following is a Non-member function overloads
 
+    template<typename type, typename Traits, typename Alloc>
+      Basic_string<type, traits, Alloc> //RVO
+      operator+(const Basic_string<type, traits, Alloc>& lhs,
+                const Basic_string<type, traits, Alloc>& rhs){
+                    Basic_string<type, traits, Alloc> tool(lhs);
+                    tool.append(rhs);
+                    return tool;
+                }
+
+    template<typename type, typename Traits, typename Alloc>
+      Basic_string<type, traits, Alloc>
+      operator+(const Basic_string<type, traits, Alloc>& lhs,
+                const type& rhs){
+                    Basic_string<type, traits, Alloc> tool(lhs);
+                    tool.append(rhs);
+                    return tool;
+                }
+
+    template<typename type, typename Traits, typename Alloc>
+      Basic_string<type, traits, Alloc>
+      operator+(const type& lhs,
+                const Basic_string<type, traits, Alloc>& rhs){
+                    Basic_string<type, traits, Alloc> tool(rhs);
+                    tool.append(lhs);
+                    return tool;
+                }
+
+    template<typename type, typename Traits, typename Alloc>
+      Basic_string<type, traits, Alloc>
+      operator+(const Basic_string<type, traits, Alloc>& lhs,
+                type* rhs){
+                    Basic_string<type, traits, Alloc> tool(lhs);
+                    tool.append(rhs);
+                    return tool;
+                }
+
+    template<typename type, typename Traits, typename Alloc>
+      Basic_string<type, traits, Alloc>
+      operator+(type* lhs,
+                const Basic_string<type, traits, Alloc>& rhs){
+                    Basic_string<type, traits, Alloc> tool(lhs);
+                    tool.append(rhs);
+                    return tool;
+                }
+
+    template<typename type, typename Traits, typename Alloc>
+    inline ostream& 
+    operator<<(ostream& os, 
+            const Basic_string<type, traits, Alloc>& para){
+                if(para._Data_is_local()){
+                    os << para._Return_pointer();
+                }else{
+                    os << para._Return_local_pointer()
+                }
+            }
+
+    template<typename type, typename Traits, typename Alloc>
+    inline istream& 
+    operator>>(istream& is,
+            const Basic_string<type, traits, Alloc>& para){
+                
+                if(is.good()){
+                    
+                }else{
+                    para = Basic_string<type, traits, Alloc>();
+                }
+                return is;
+            } 
 
     };
 
