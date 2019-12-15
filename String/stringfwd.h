@@ -3,6 +3,8 @@
 
 #include<memory>
 #include"Char_traits.h"
+#include"Base_string.h"
+#include"Base_string.cc"
 
 namespace String{
     template<typename Char_type, typename _Traits = Char_traits<Char_type>,

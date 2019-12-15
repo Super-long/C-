@@ -4,23 +4,59 @@
 #include<initializer_list>
 #include<exception>
 #include<iterator>
-#include<cstdlib>
+#include<cstring>
+#include<ext/alloc_traits.h>
+#include<ext/atomicity.h>
+
+#include<iostream>
+using std::cout;
+using std::endl;
+//For debugging
+
 namespace String{
 
     template<typename type, typename Traits, typename Alloc>
     class Basic_string{
+        public:
+
+        /*
+        template <class Type> struct rebind {
+        typedef allocator<Type> other;
+        };
+        */  
+        //reference part from cpluscplus and basic_string.h;  
+        
+        using alloc_type = typename __gnu_cxx::__alloc_traits<Alloc>::template
+	        rebind<type>::other;
+
+        using Alloc_Traits = __gnu_cxx::__alloc_traits<alloc_type>;
+
+        public:
+            using traits = Traits;
+            using value_type =  typename Traits::char_type;
+            using size_type = typename Alloc_Traits::size_type;
+            using difference_type = typename Alloc_Traits::difference_type;
+            using reference = typename Alloc_Traits::reference;
+            using const_reference = typename Alloc_Traits::const_reference;
+            using pointer = typename Alloc_Traits::pointer;
+            using const_pointer = typename Alloc_Traits::const_pointer;
+    
+            //TODU 迭代器和反向迭代器
+        
+        
+        
         private:
             Alloc _alloc_;
-            //Traits _traits_;//这个成员需要吗 我们只需要函数
             size_type _String_length;
             pointer _True_value;
 
             enum {initial_capacity = 15 / sizeof(type)};
 
-            union{
-                type initial_buf[static_cast<int>(initial_capacity)];
-                size_type alloc_capacity;
-            };
+            
+            type initial_buf[static_cast<int>(initial_capacity)];
+            size_type alloc_capacity;
+            //使用联合体会出现一点点意外 在拷贝时数据总是不对 
+            
 
         private:
 /*------------------------------------------------*/
@@ -52,8 +88,23 @@ namespace String{
             return _True_value;
         }
 
-        pointer _Return_local_pointer() const noexcept{
-            return initial_buf;
+        pointer _Return_local_pointer(){
+            #if __cplusplus >= 201103L
+                return std::pointer_traits<pointer>::pointer_to(*initial_buf);
+            #else
+                return pointer(initial_buf);
+            #endif
+            //return static_cast<pointer>(initial_buf);
+        }
+
+        //TODO 搞清楚这个参数为什么不能直接转换
+        const_pointer _Return_local_pointer() const {
+            #if __cplusplus >= 201103L
+                return std::pointer_traits<const_pointer>::pointer_to(*initial_buf);
+            #else
+                return const_pointer(initial_buf);
+            #endif
+            //return static_cast<pointer>(initial_buf);
         }
 
         Alloc& _Return_alloc() noexcept{
@@ -61,7 +112,7 @@ namespace String{
         }
 
         bool _Data_is_local() const noexcept{
-            return _Return_pointer() == _Return_local_pointer();
+            return this->_Return_pointer() == this->_Return_local_pointer();
         }
 
         void _S_SetUp_date(pointer p_) noexcept{
@@ -86,9 +137,8 @@ namespace String{
             if(n == 1)
                 traits::assign(*ptr, ch);
             else 
-                traits::assign(ptr, n, ch)
+                traits::assign(ptr, n, ch);
         }
-
 
         public:
 /*------------------------------------------------*/
@@ -97,33 +147,47 @@ namespace String{
             _True_value(_Return_local_pointer()), _alloc_(Alloc())
             {_S_SetUp_length(0);}
 
-            //from Nth to the N+pos th
+            //from posth to the N+pos th
             Basic_string(const Basic_string& _str, size_type pos, size_type n):
-            _True_value(_Return_local_pointer()){
+            _True_value(_Return_local_pointer()), _alloc_(Alloc()){
+                _S_SetUp_length(0);
                 size_type len = _str.length();
                 size_type _end = pos + n;
                 if(_end > len) _end = len;
+                if(!_str._Data_is_local())
                 _S_construct(_str._Return_pointer() + pos,
                              _str._Return_pointer() + _end); 
+                else
+                _S_construct(_str._Return_local_pointer() + pos,
+                             _str._Return_local_pointer() + _end); 
             }
 
-            Basic_string(const Basic_string& _str, size_type pos, size_type n
+            Basic_string(const Basic_string& _str, size_type pos, size_type n,
             const Alloc& _all_) :_True_value(_Return_local_pointer()), _alloc_(_all_){
                 size_type len = _str.length();
                 size_type _end = pos + n;
                 if(_end > len) _end = len;
+                if(!_str._Data_is_local())
                 _S_construct(_str._Return_pointer() + pos,
                              _str._Return_pointer() + _end); 
+                else
+                _S_construct(_str._Return_local_pointer() + pos,
+                             _str._Return_local_pointer() + _end); 
             }
 
             //from the Nth to the end.
-            Basic_string(const Basic_string& _strm, size_type n, const Alloc& _all = Alloc()) : 
+            Basic_string(const Basic_string& _str, size_type n, const Alloc& _all = Alloc()) : 
                 _True_value(_Return_local_pointer()),_alloc_(Alloc(_all)){
                     size_type _start_ = n;
-                    size_type len = _strm.length();
+                    size_type len = _str.length();
                     if(n > len)  _start_ = len;
-                    _S_construct(_strm._Return_pointer() + _start_,
-                                 _strm._Return_pointer() + len);
+                    
+                    if(!_str._Data_is_local())
+                    _S_construct(_str._Return_pointer() + n,
+                                _str._Return_pointer() + len); 
+                    else
+                    _S_construct(_str._Return_local_pointer() + n,
+                                _str._Return_local_pointer() + len); 
                 }
 
             explicit Basic_string(Alloc&& _a) noexcept :
@@ -135,18 +199,20 @@ namespace String{
                 _True_value(_Return_local_pointer()), _alloc_(_a){
                     _S_SetUp_length(0);
                 }
-
-            //copy construct function.
-            //TODO 写的很好 值得学习
-            Basic_string(Basic_string&& str): 
+            /**
+             * @ copy construct function.
+             * @ A good design idea which is generic code reuse.
+             */
+            Basic_string(Basic_string&& str) noexcept : 
             _True_value(_Return_local_pointer()), 
-            _alloc_(std::move(str._Return_alloc())) noexcept{
+            _alloc_(std::move(str._Return_alloc())){
                 if(str._Data_is_local()){
                     this->S_copy_(initial_buf, str._Return_local_pointer(), str.length());
                 }else{
                     _S_SetUp_date(str._Return_pointer());
                     _S_SetUp_capacity(str.capacity());
                 }
+                _S_SetUp_length(str.length());
             }
 
             Basic_string(const Basic_string& str) :
@@ -154,26 +220,34 @@ namespace String{
                 _alloc_(Alloc()) {
                 _S_construct(str._Return_pointer(), str._Return_pointer() + str.length());
             }
-
-            //: @a str must have at least n characters.
+            /**
+             * @ str must have at least n characters.
+             * @ if str length less than n, Behavior is undefined at this time.
+             */
             Basic_string(const type* str, size_type n,
-                Alloc& _all_ = Alloc()) :
+                const Alloc& _all_ = Alloc()) :
                 _True_value(_Return_local_pointer()), _alloc_(_all_){
                     _S_construct(str, str + n);
                 }
 
-            Basic_string(const type* str, Alloc& _all_ = Alloc())
+            //TODO: what do with const and noconst?
+            explicit Basic_string(const type* str, const Alloc& _all_ = Alloc())
                 : _True_value(_Return_local_pointer()), _alloc_(_all_){
                     _S_construct(str, str + strlen(str));
             }
 
-            Basic_string(size_type n, type ch, Alloc& _all_ = Alloc())
+            explicit Basic_string(type* str, const Alloc& _all_ = Alloc())
+                : _True_value(_Return_local_pointer()), _alloc_(_all_){
+                    _S_construct(str, str + strlen(str));
+            }
+
+            Basic_string(size_type n, type ch, const Alloc& _all_ = Alloc())
                 :_True_value(_Return_local_pointer()), _alloc_(_all_){
                     _S_construct(n, ch);
             }
             
             Basic_string(std::initializer_list<char> list_,
-            Alloc& _all_ = Alloc()) : 
+            const Alloc& _all_ = Alloc()) : 
             _True_value(_Return_local_pointer()), _alloc_(_all_){
                 _S_construct(list_.begin(), list_.end());
             }
@@ -192,6 +266,7 @@ namespace String{
                     _S_SetUp_date(str._Return_pointer());
                     _S_SetUp_capacity(str.capacity());
                 }
+                _S_SetUp_length(str.length());
             }
 
 /*------------------------------------------------*/
@@ -255,6 +330,7 @@ namespace String{
             operator[](size_type pos) const{
                 if(pos > this->size())
                     throw std::out_of_range("'String[] 136行' out of range.");
+                if(_Data_is_local()) return _Return_local_pointer()[pos];
                 return _Return_pointer()[pos];
             }
 
@@ -262,6 +338,7 @@ namespace String{
             operator[](size_type pos){
                 if(pos > this->size())
                     throw std::out_of_range("'String[] 144行' out of range.");
+                if(_Data_is_local()) return _Return_local_pointer()[pos];
                 return _Return_pointer()[pos];
             }
 
@@ -270,9 +347,10 @@ namespace String{
  */
             const_reference
             at(size_type n) const{
-                if(pos > this->size())
+                if(n > this->size())
                     throw std::out_of_range("'String[] 158行' out of range.");
-                return _Return_pointer()[pos];
+                if(_Data_is_local()) return _Return_local_pointer()[n];
+                return _Return_pointer()[n];
             }
 
 /**
@@ -280,9 +358,10 @@ namespace String{
  */
             reference
             at(size_type n){
-                if(pos > this->size())
+                if(n > this->size())
                     throw std::out_of_range("'String[] 158行' out of range.");
-                return _Return_pointer()[pos];
+                if(_Data_is_local()) return _Return_local_pointer()[n];
+                return _Return_pointer()[n];
             }
 
 #if __cplusplus >= 201103L
@@ -333,30 +412,6 @@ static const size_type	npos = static_cast<size_type>(-1);
 /*------------------------------------------------*/
     //Following is a Non-member function overloads
 
-        /*
-        template <class Type> struct rebind {
-        typedef allocator<Type> other;
-        };
-        */  
-       //reference part from cpluscplus and basic_string.h;  
-        using alloc_type = typename __alloc_traits<Alloc>::template
-	        rebind<type>::other;
-
-        using Alloc_Traits = __alloc_traits<alloc_type>;
-
-        public:
-            using traits = Traits;
-            using value_type =  typename Traits::char_type;
-            using size_type = typename _Alloc_traits::size_type;
-            using difference_type = typename _Alloc_traits::difference_type	difference_type;
-            using reference = typename _Alloc_traits::reference;
-            using const_reference = typename _Alloc_traits::const_reference;
-            using pointer = typename _Alloc_traits::pointer;
-            using const_pointer = typename _Alloc_traits::const_pointer;
-    
-            //TODU 迭代器和反向迭代器
-        
-        
         };
     
 }

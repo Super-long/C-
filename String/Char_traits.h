@@ -9,7 +9,7 @@ namespace String{
             using int_type  = long int;
 
             static constexpr void 
-            assign(char_type& _c1, char_type& _c2){
+            assign(char_type& _c1, const char_type& _c2){
                 _c1 = _c2;
             }
 
@@ -88,7 +88,7 @@ namespace String{
         typename char_traits_<type>::char_type*
         char_traits_<type>::assign(char_type* str1, std::size_t n, const char_type& _c){
             std::fill_n(str1, n, _c);
-            return str;
+            return str1;
         }
 
         template<typename type>
@@ -107,7 +107,7 @@ namespace String{
             using int_type = int;
 
             static constexpr void 
-            assign(char_type& _c1, char_type& _c2){
+            assign(char_type& _c1, const char_type& _c2){
                 _c1 = _c2;
             }
 

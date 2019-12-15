@@ -1,4 +1,8 @@
 #include"Base_string.h"
+#include<iostream>
+using std::cout;
+using std::endl;
+//for debugging
 
 namespace String{
     template<typename type, typename Traits, typename Alloc>
@@ -11,7 +15,7 @@ namespace String{
             if(My_capacity < len){
                 pointer ptr_ = _S_create(len, My_capacity);
                 _S_Delete();
-                _S_SetUp_date(ptr);
+                _S_SetUp_date(ptr_);
                 _S_SetUp_capacity(len); 
             }
 
@@ -68,16 +72,18 @@ namespace String{
             if(_start == nullptr || _end == nullptr){
                 throw std::invalid_argument("'String::construct' parameter is nullptr.");
             }
-
             size_type len = static_cast<size_type>(std::distance(_start, _end));
-
             if(len > static_cast<size_type>(initial_capacity)){
+                _S_SetUp_capacity(len);
                 _S_SetUp_date(_S_create(len, static_cast<size_type>(0)));
-                _S_SetUp_length(len);
             }
 
             try{
-                _S_copy_of_interval(_start, _end);
+                if(_Data_is_local())
+                    _S_copy_of_interval(_Return_local_pointer(), _start, _end);
+                else
+                    _S_copy_of_interval(_Return_pointer(), _start, _end);
+                _S_SetUp_capacity(len);
             }catch(...){
                 _S_Delete();
                 throw;
@@ -88,9 +94,9 @@ namespace String{
     template<typename type, typename Traits, typename Alloc>
     void Basic_string<type, Traits, Alloc>::
     _S_construct(size_type n, type para){
-        size_type len = n; 
+        size_type len = n;
         if(n > static_cast<size_type>(initial_capacity)){
-            _S_SetUp_date(_S_create(len, static_cast<size_type>(0));
+            _S_SetUp_date(_S_create(len, static_cast<size_type>(0)));
             _S_SetUp_capacity(len);
         }
         if(n) _S_assign(_Return_pointer(), n, para);
@@ -105,7 +111,7 @@ namespace String{
             _ideal = this->length();
         
         const size_type _capacity = capacity();
-        
+
         if(_ideal != _capacity){
             if(_ideal > _capacity
             || _ideal > static_cast<size_type>(initial_capacity)){
