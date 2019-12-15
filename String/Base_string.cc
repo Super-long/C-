@@ -37,14 +37,18 @@ namespace String{
             traits::copy(_new_, _old_, n);
     }
 
+    //Following function is inefficient in the standard library.
     template<typename type, typename Traits, typename Alloc>
     void Basic_string<type, Traits, Alloc>::
     _S_expansion(size_type pos, size_type len1, const type* para, size_type len2){
         size_type new_capacity = this->length() + len2 - len1;
         pointer ptr = _S_create(new_capacity, this->capacity());
-
-        S_copy_(ptr, _Return_pointer(), pos);
-
+        
+        if(pos)
+            S_copy_(ptr, _Return_pointer(), pos);//using in construct.
+        if(para && len2)
+            S_copy_(ptr + pos, para, len2); //using in append.
+        
         _S_Delete();
         _S_SetUp_date(ptr);
         _S_SetUp_capacity(new_capacity); 
@@ -128,4 +132,60 @@ namespace String{
         }
     }
 
+    template<typename type, typename Traits, typename Alloc>
+    Basic_string<type, Traits, Alloc>&
+    Basic_string<type, Traits, Alloc>::
+    _S_append(const type* str, size_type n){
+        const size_type len = n + this->length();
+
+        if(len <= this->capacity()){
+            if(n)
+                if(_Data_is_local())
+                    this->S_copy_(_Return_local_pointer() + length(),
+                                   str, n);
+                else
+                    this->S_copy_(_Return_pointer() + length(),
+                                   str, n);
+        }else{
+            this->_S_expansion(length(), static_cast<size_type>(0), str, n)
+        }
+        _S_SetUp_length(len);
+        return *this;
+    }
+
+    template<typename type, typename Traits, typename Alloc>
+    Basic_string<type, Traits, Alloc>&
+    Basic_string<type, Traits, Alloc>::
+    _S_append(size_type n, type ch){
+        size_type len = length() + n;
+
+        if(n){
+            if(len > capacity()){
+                _S_expansion(length(), 0, nullptr, n);
+                traits::assign(_Return_pointer() + length(), n, ch);
+            }else{
+                if(_Data_is_local())
+                    traits::assign(_Return_local_pointer() + length(), n, ch);
+                else 
+                    traits::assign(_Return_pointer() + length(), n, ch);
+            }
+        }
+        _S_SetUp_length(len);
+        return *this;
+    }
+
+    template<typename type, typename Traits, typename Alloc>
+    Basic_string<type, Traits, Alloc>&
+    Basic_string<type, Traits, Alloc>::
+    _S_replace(size_type pos, size_type len1, type* para, size_type len2){
+        size_type new_capacity = length() + len2 - len1;
+         
+    }
+
 }
+
+/**
+ * @在其中得到的收获
+ * 1.仔细思考 为自己在写的东西提供一套泛型的接口 可以避免大量无意义的工作
+ * 2.擅长使用用库
+*/

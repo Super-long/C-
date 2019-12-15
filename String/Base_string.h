@@ -140,6 +140,13 @@ namespace String{
                 traits::assign(ptr, n, ch);
         }
 
+        Basic_string& _S_replace(size_type pos, size_type len1, type* para, size_type len2);
+
+        Basic_string& _S_append(const type* str, size_type n);
+
+        Basic_string& _S_append(size_type n, type ch);
+
+
         public:
 /*------------------------------------------------*/
         //Following is a constructor part.
@@ -287,6 +294,7 @@ namespace String{
                 return _alloc_.max_size();
             }
 
+            //TODO
             //尺寸变小 多余的部分裁掉 尺寸变小 多余的部分用第二个参数填充
             void resize(size_type n, type ch);
 
@@ -403,6 +411,74 @@ static const size_type	npos = static_cast<size_type>(-1);
 
 /*------------------------------------------------*/
     //Following is a Member Modifiers.
+
+    Basic_string& append(const Basic_string& str){
+        if(str._Data_is_local())
+        return _S_append(str._Return_local_pointer(), str.length());
+        return _S_append(str._Return_pointer(), str.length());
+    }
+
+    Basic_string& append(const Basic_string& str, size_type pos, size_type n){
+        if(str._Data_is_local())
+        return _S_append(str._Return_local_pointer() + pos, n);
+        return _S_append(str._Return_pointer() + pos, n);
+    }
+
+    Basic_string& append(const type* para){
+        if(!para) throw std::invalid_argument("'String append': parameter is nullptr.");
+        return _S_append(para, strlen(para));   
+    }
+
+    Basic_string& append(const type* para, size_type n){
+        if(!para) throw std::invalid_argument("'String append': parameter is nullptr.");
+        return _S_append(para, n);  
+    }
+
+    Basic_string& append(size_type n, type ch){
+        return _S_append(n, ch);
+    }
+
+#if __cplusplus >= 201103L
+    Basic_string& append(initializer_list<type> list){
+
+    }
+#endif
+
+    template<typename Inerator_ >
+    Basic_string& 
+    append(const Inerator_& lhs, const Inerator_& rhs){
+        //TODO 有点难 放一放  
+        //basic_string.h 1299行
+    } 
+    
+    void push_back(const type& ch){
+        const size_type len = length();
+        if(len + 1 > capacity()){
+            _S_expansion(len, static_cast<size_type>(0), nullptr, static_cast<size_type>());
+            traits::assign(_Return_pointer()[len], ch);
+        }
+        _S_SetUp_length(len + 1);
+    }
+    
+    /**
+     * brief @ set value to contents of another string.
+    */
+   Basic_string& assign(const Basic_string& str){
+       this->_S_assign(str);
+       return *this;
+   }
+
+#if __cplusplus >= 201103L
+
+    Basic_string& assign(Basic_string&& str) noexcept{
+        return *this = std::move(str);
+    }
+
+#endif 
+
+    Basic_string& assign(const Basic_string& str, size_type pos, size_type n){
+
+    }
 
 
 /*------------------------------------------------*/
