@@ -86,3 +86,5 @@ int main(){
 
     return 0;
 }
+
+//编译用这个 g++ -std=c++17 xxx
