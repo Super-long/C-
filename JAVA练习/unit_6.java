@@ -78,6 +78,7 @@ public class unit_6{
         drawfight(msm);
         drawfight(msa); //java我真是太喜欢了 太好用了.
         System.out.println(((MagicSwordMan)msm).toString());
+        System.out.println(((MagicSwordMan)msm));
         //NoMagicSwordMan TT = (NoMagicSwordMan)msm;//编译通过 执行出现问题 很正常
         //msm.getname(); //太有意思了 null都能打印 java大法好.
     }
