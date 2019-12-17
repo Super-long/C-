@@ -6,7 +6,7 @@ public class ClientQueue{
         Client para1 = new Client("127.0.0.1", "lzl");
         Client para2 = new Client("192.168.0.1", "zsy");
 
-        Clientqueue que = new Clientqueue();
+        Clientqueue que = new Clientqueue(); //接口中只有一个函数的可以使用Lambda
         que.addclientListener(new Clientlisten(){
             @Override
             public void clientaddlisten(clientevent para){
