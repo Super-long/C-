@@ -26,6 +26,8 @@ public class CashcardService{
                 break;
             case OTHERCOMPUTER:
                 break;
+            default:
+                assert false : "undefined value."; //assert关键字 和C++差不多
         }
     }
 }
