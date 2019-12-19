@@ -7,7 +7,8 @@ public class test_compare {
         User user1 = new User(1, "lzl");
         student.add(user2);
         student.add(user1);
-        Collections.sort(student, COM);
+        Collections.sort(student, CO);
+        student.sort(COM);
         for(User T : student){
             System.out.println(T);
         }
@@ -15,6 +16,14 @@ public class test_compare {
         //test of lambda expression.
         Tst x = (String str) -> String.format("str %s", str); //语句比较长可以使用{}来划分一个区域
     }
+
+    //接口只有一个方法 Lambda expression也可
+    private static final Comparator<User> CO = (user, t1) -> {
+        //return user.compareTo(t1);
+        if(user.getID() < t1.getID()) return -1;
+        else if(user.getID() < t1.getID()) return 0;
+        return 1;
+    };
 
     private static final Comparator<User> COM = new Comparator<User>() {
         @Override

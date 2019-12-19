@@ -19,7 +19,6 @@ public class test_Set{
         se.add(new Student("zhang","9824"));
         se.add(new Student("zhang","9824"));
         System.out.println(se.size());
-
     }
     /*
     * @ 静态方法不能使用类的非静态变量。静态方法从参数列表得到数据，然后计算这些数据。
