@@ -577,7 +577,60 @@ static const size_type	npos = static_cast<size_type>(-1);
         }
     }
 
-    
+    const type* 
+    c_str(){
+        if(_Data_is_local())
+            return _Return_local_pointer();
+        else 
+            return _Return_pointer();
+    }
+
+    Alloc
+    get_allocator() const noexcept{
+        return _Return_alloc();
+    }
+
+    const type* 
+    data() noexcept{
+        if(_Data_is_local())
+            return _Return_local_pointer();
+        else 
+            return _Return_pointer();
+    }
+
+#if __cplusplus > 201402L
+
+    /**
+     * @ Using pointer modify string was allowed in C++14.  
+     */
+    type*
+    data() noexcept{
+        if(_Data_is_local())
+            return _Return_local_pointer();
+        else 
+            return _Return_pointer();    
+    }
+
+#endif
+
+    /**
+     * @ Copy substring into c string.
+     * @ If pos > this->size() std::out_of_range
+     * @ c string will copy the value.
+    */
+    size_type 
+    copy(type* s, size_type len, size_type pos = 0) const;
+
+    size_type
+    find(const type* str, size_type pos, size_type n) const noexcept;
+
+    size_type
+    find(const Basic_string& str, size_type pos, size_type n) const noexcept{
+        return find(str._Return_pointer(), pos, n);
+    }
+
+    size_type 
+    find(type ch, size_type pos = 0) const noexcept;
 
 };
 /*------------------------------------------------*/
@@ -640,6 +693,7 @@ static const size_type	npos = static_cast<size_type>(-1);
                 return os;
             }
 
+    //这个现在没办法写 basic_istream<_CharT, _Traits>没办法直接创建 导致没办法从流中获取数据 
     template<typename type, typename Traits, typename Alloc>
     inline std::istream& 
     operator>>(std::istream& is, 
@@ -653,6 +707,7 @@ static const size_type	npos = static_cast<size_type>(-1);
                 return is;
             } 
 
+    //getline也没办法写
 
     template<typename type, typename Traits, typename Alloc>
     void swap(Basic_string<type, Traits, Alloc>& lhs,

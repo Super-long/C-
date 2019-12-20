@@ -308,10 +308,65 @@ namespace String{
         }
     }
 
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      copy(type* s, size_type len, size_type pos) const{
+        if(pos > this->size()){
+            throw std::out_of_range("'String copy' pos is out of range.");
+        }
+        if(n < 0) return 0;
+        pos + n <= this->size() : ? n = (this->size() - pos);
+
+        if(n > 0){
+            if(_Data_is_local())
+                S_copy_(s, _Return_local_pointer(), len);
+            else 
+                S_copy_(s, _Return_pointer(), len);
+        }
+        return n;
+      }
+
+    //TODO: The third parameter is not processed.
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      find(const type* str, size_type pos, size_type n) const noexcept{
+        size_type len = strlen(str);
+        
+        if(n == 0)
+            return pos > len : npos ? pos;
+        if(n >= len) 
+            return npos;
+
+        const type* const _data = _Return_pointer();
+        const type* first = _data + pos;
+
+        const type* Temp = strstr(_data, first);
+        return static_cast<size_type>(std::distance(_data, Temp));
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      find(type ch, size_type pos = 0) const noexcept{
+          size_type ret = npos;
+          const size_type __size = this->size();
+          
+          if(pos < __size){
+              const type* _data = _Return_pointer();
+              const size_type n = __size - pos;
+              const type* end_ = Traits::find(data, n, ch);
+              if(end_) 
+                ret = static_cast<size_type>(std::distance(_data, end_));
+          }
+          return ret;
+      }
+
 }
 
 /**
  * @在其中得到的收获
  * 1.仔细思考 为自己在写的东西提供一套泛型的接口 可以避免大量无意义的工作
- * 2.擅长使用用库
+ * 2.擅于使用库
 */
