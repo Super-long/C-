@@ -5,16 +5,22 @@ using namespace std;
 //http://man7.org
 
 int main(){
-    string str("asdasda");
-    string one("aaa");
+    using std::cout;
+    using std::endl;
+    const char book[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmn";
+    string S(book);
+    string T;
+ 
+     cout << S << endl;
+    T.append(15, 'c');
 
-    str.pop_back();
-    one = "asdasd" + str;
-    cout << one << endl;
-    cout << str << endl;
-    one.assign(str);
-    str.assign(10,'a');
-    cout << one << endl;
-    cout << str << endl;
-    return 0;
+    cout << S.size() << endl;
+    cout << S.capacity() << endl;
+    //S.assign(T, 2, 10);
+    T.assign(book);
+    cout << T << endl;
+    cout << T.size() << endl;
+    cout << T.capacity() << endl;
+
+    cout << S << endl; 
 }

@@ -1,8 +1,13 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class test_StackTrace {
     public static void main(String [] args)
     {
         test_StackTrace t3 = new test_StackTrace();
         t3.a();
+        List a = new ArrayList();
+
     }
     Throwable th =  new Throwable();;
 

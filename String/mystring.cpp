@@ -11,17 +11,10 @@ int main(){
     using std::endl;
     const char book[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmn";
     String::Basic_string<char,Char_traits<char>,std::allocator<char>> S(book);
-    //String::Basic_string<char,Char_traits<char>,std::allocator<char>> T(S);
-    
-    //String::string S;
-    std::cout << S.length() << endl;
-    std::cout << S.capacity() << endl;
-    S.reserve(20);
-    std::cout << S.length() << endl;
-    std::cout << S.capacity() << endl;
-    cout << S.back() << " " << S.front() << endl;
-
-    cout << "数据" << S[0] << S[1] << S[2]<< endl;
-
+    String::Basic_string<char,Char_traits<char>,std::allocator<char>> T;
+    String::Basic_string<char,Char_traits<char>,std::allocator<char>> TT;
+    T.append(10, 'a');
+    TT.append(S);
+    cout << T + "asd" << endl;
     return 0;
 }

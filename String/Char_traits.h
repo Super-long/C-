@@ -97,7 +97,7 @@ namespace String{
             return static_cast<type*>(
                 __builtin_memmove(str1, str2, n * sizeof(char_type))
                 //这个函数的作用是移除两个参数区间之间的数据 并把第二个参数向后n个字节的数据移动到第一个参数之后
-            )
+            );
         }
 
     template<typename type>
@@ -152,6 +152,11 @@ namespace String{
             static char_type*
             assign(char_type* str1, std::size_t n, const char_type& _c){
                 return char_traits_<char_type>::assign(str1, n, _c);
+            }
+
+            static char_type*
+            move(char_type* str1, const char_type* str2, std::size_t n){
+                return char_traits_<char_type>::move(str1, str2, n);
             }
     };
 

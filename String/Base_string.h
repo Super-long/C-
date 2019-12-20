@@ -86,35 +86,8 @@ namespace String{
             this->S_copy_(ptr, _start, static_cast<size_type>(std::distance(_start, _end)));
         }
 
-        pointer _Return_pointer() const noexcept{
-            return _True_value;
-        }
-
-        pointer _Return_local_pointer(){
-            #if __cplusplus >= 201103L
-                return std::pointer_traits<pointer>::pointer_to(*initial_buf);
-            #else
-                return pointer(initial_buf);
-            #endif
-            //return static_cast<pointer>(initial_buf);
-        }
-
-        //TODO 搞清楚这个参数为什么不能直接转换
-        const_pointer _Return_local_pointer() const {
-            #if __cplusplus >= 201103L
-                return std::pointer_traits<const_pointer>::pointer_to(*initial_buf);
-            #else
-                return const_pointer(initial_buf);
-            #endif
-            //return static_cast<pointer>(initial_buf);
-        }
-
         Alloc& _Return_alloc() noexcept{
             return _alloc_;
-        }
-
-        bool _Data_is_local() const noexcept{
-            return this->_Return_pointer() == this->_Return_local_pointer();
         }
 
         void _S_SetUp_date(pointer p_) noexcept{
@@ -151,7 +124,7 @@ namespace String{
         }
 
         //_S_replace() function in standard library is quite complicated. 
-        Basic_string& _S_replace(size_type pos, size_type len1, type* para, size_type len2);
+        Basic_string& _S_replace(size_type pos, size_type len1, const type* para, size_type len2);
 
         Basic_string& _S_replace(size_type n, const type& ch);
 
@@ -162,6 +135,36 @@ namespace String{
         void _S_erase(size_type pos, size_type n);
 
         public:
+
+        //其实写在这里比较蠢 但是不这样没办法输出啊
+        bool _Data_is_local() const noexcept{
+            return this->_Return_pointer() == this->_Return_local_pointer();
+        }
+
+        pointer _Return_pointer() const noexcept{
+            return _True_value;
+        }
+
+        pointer _Return_local_pointer(){
+            #if __cplusplus >= 201103L
+                return std::pointer_traits<pointer>::pointer_to(*initial_buf);
+            #else
+                return pointer(initial_buf);
+            #endif
+            //return static_cast<pointer>(initial_buf);
+        }
+
+        //TODO 搞清楚这个参数为什么不能直接转换
+        const_pointer _Return_local_pointer() const {
+            #if __cplusplus >= 201103L
+                return std::pointer_traits<const_pointer>::pointer_to(*initial_buf);
+            #else
+                return const_pointer(initial_buf);
+            #endif
+            //return static_cast<pointer>(initial_buf);
+        }
+
+
 /*------------------------------------------------*/
         //Following is a constructor part.
             Basic_string() :
@@ -457,9 +460,9 @@ static const size_type	npos = static_cast<size_type>(-1);
     }
 
 #if __cplusplus >= 201103L
-    Basic_string& append(initializer_list<type> list){
+    /*Basic_string& append(initializer_list<type> list){
 
-    }
+    }*/
 #endif
 
     template<typename Inerator_ >
@@ -472,8 +475,13 @@ static const size_type	npos = static_cast<size_type>(-1);
     void push_back(const type& ch){
         const size_type len = length();
         if(len + 1 > capacity()){
-            _S_expansion(len, static_cast<size_type>(0), nullptr, static_cast<size_type>());
-            traits::assign(_Return_pointer()[len], ch);
+            _S_expansion(len, static_cast<size_type>(0), nullptr, static_cast<size_type>(1));
+            if(!_Data_is_local())
+                traits::assign(_Return_pointer()[len], ch);
+            else
+                traits::assign(_Return_local_pointer()[len], ch); 
+        }else{
+            this->append(ch);
         }
         _S_SetUp_length(len + 1);
     }
@@ -481,7 +489,7 @@ static const size_type	npos = static_cast<size_type>(-1);
     /**
      * brief @ set value to contents of another string.
     */
-   Basic_string& assign(const Basic_string& str){
+   Basic_string& assign(Basic_string& str){
        this->_S_assign(str);
        return *this;
    }
@@ -497,8 +505,8 @@ static const size_type	npos = static_cast<size_type>(-1);
     //I didn't do boundary check. Because I'm so lazy.
     Basic_string& assign(const Basic_string& str, size_type pos, size_type n){
         if(str._Data_is_local())
-            return this->_S_replace(length(), 0, _Return_local_pointer(), str.length());
-        return this->_S_replace(length(), 0, _Return_pointer(), str.length());
+            return this->_S_replace(length(), pos, str._Return_local_pointer(), n);
+        return this->_S_replace(length(), pos, str._Return_pointer(), n);
     }
 
     Basic_string& assign(const type* str, size_type n){
@@ -520,15 +528,15 @@ static const size_type	npos = static_cast<size_type>(-1);
 
 
 #if __cplusplus >= 201103L
+
     void pop_back() noexcept{
-        if(empty()) throw std::exception("'String pop_back' String is empty.")
+        if(empty()) return;
         _S_erase(length() - 1, 1);
     }
 
 #endif 
 
-
-    void Swap(const Basic_string& str) noexcept;
+    void Swap(Basic_string& str) noexcept;
 
     Basic_string& 
     operator+=(const Basic_string& str){
@@ -548,86 +556,124 @@ static const size_type	npos = static_cast<size_type>(-1);
 /*------------------------------------------------*/
     //Following is a String operations
 
+    int compare(const Basic_string& str) const{
+        const size_type len_a = this->size();
+        const size_type len_b = str.size();
 
+        if(len_a < len_b) return -1;
+        else if(len_a > len_b) return 1;
+
+        bool is_a = _Data_is_local();
+        bool is_b = str._Data_is_local();
+
+        if(is_a && is_b){
+            return traits::compare(_Return_local_pointer(), str._Return_local_pointer(), len_a);    
+        }else if(!is_a && !is_b){
+            return traits::compare(_Return_pointer(), str._Return_pointer(), len_a);
+        }else if(!is_a && is_b){
+            return traits::compare(_Return_pointer(), str._Return_local_pointer(), len_a);
+        }else{
+            return traits::compare(_Return_local_pointer(), str._Return_pointer(), len_a);
+        }
+    }
+
+    
+
+};
 /*------------------------------------------------*/
     //Following is a Non-member function overloads
 
     template<typename type, typename Traits, typename Alloc>
-      Basic_string<type, traits, Alloc> //RVO
-      operator+(const Basic_string<type, traits, Alloc>& lhs,
-                const Basic_string<type, traits, Alloc>& rhs){
-                    Basic_string<type, traits, Alloc> tool(lhs);
+      Basic_string<type, Traits, Alloc> //RVO
+      operator+(const Basic_string<type, Traits, Alloc>& lhs,
+                const Basic_string<type, Traits, Alloc>& rhs){
+                    Basic_string<type, Traits, Alloc> tool(lhs);
                     tool.append(rhs);
                     return tool;
                 }
 
     template<typename type, typename Traits, typename Alloc>
-      Basic_string<type, traits, Alloc>
-      operator+(const Basic_string<type, traits, Alloc>& lhs,
+      Basic_string<type, Traits, Alloc>
+      operator+(const Basic_string<type, Traits, Alloc>& lhs,
                 const type& rhs){
-                    Basic_string<type, traits, Alloc> tool(lhs);
+                    Basic_string<type, Traits, Alloc> tool(lhs);
                     tool.append(rhs);
                     return tool;
                 }
 
     template<typename type, typename Traits, typename Alloc>
-      Basic_string<type, traits, Alloc>
+      Basic_string<type, Traits, Alloc>
       operator+(const type& lhs,
-                const Basic_string<type, traits, Alloc>& rhs){
-                    Basic_string<type, traits, Alloc> tool(rhs);
+                const Basic_string<type, Traits, Alloc>& rhs){
+                    Basic_string<type, Traits, Alloc> tool(rhs);
                     tool.append(lhs);
                     return tool;
                 }
 
     template<typename type, typename Traits, typename Alloc>
-      Basic_string<type, traits, Alloc>
-      operator+(const Basic_string<type, traits, Alloc>& lhs,
-                type* rhs){
-                    Basic_string<type, traits, Alloc> tool(lhs);
+      Basic_string<type, Traits, Alloc>
+      operator+(const Basic_string<type, Traits, Alloc>& lhs,
+                const type* rhs){
+                    Basic_string<type, Traits, Alloc> tool(lhs);
                     tool.append(rhs);
                     return tool;
                 }
 
     template<typename type, typename Traits, typename Alloc>
-      Basic_string<type, traits, Alloc>
-      operator+(type* lhs,
-                const Basic_string<type, traits, Alloc>& rhs){
-                    Basic_string<type, traits, Alloc> tool(lhs);
+      Basic_string<type, Traits, Alloc>
+      operator+(const type* lhs,
+                const Basic_string<type, Traits, Alloc>& rhs){
+                    Basic_string<type, Traits, Alloc> tool(lhs);
                     tool.append(rhs);
                     return tool;
                 }
 
     template<typename type, typename Traits, typename Alloc>
-    inline ostream& 
-    operator<<(ostream& os, 
-            const Basic_string<type, traits, Alloc>& para){
+    inline std::ostream& 
+    operator<<(std::ostream& os, 
+            const Basic_string<type, Traits, Alloc>& para){
                 if(para._Data_is_local()){
+                    os << para._Return_local_pointer();
+                }else {
                     os << para._Return_pointer();
-                }else{
-                    os << para._Return_local_pointer()
                 }
+                return os;
             }
 
     template<typename type, typename Traits, typename Alloc>
-    inline istream& 
-    operator>>(istream& is,
-            const Basic_string<type, traits, Alloc>& para){
+    inline std::istream& 
+    operator>>(std::istream& is, 
+            const Basic_string<type, Traits, Alloc>& para){
                 
                 if(is.good()){
                     
                 }else{
-                    para = Basic_string<type, traits, Alloc>();
+                    para = Basic_string<type, Traits, Alloc>();
                 }
                 return is;
             } 
 
-    };
 
     template<typename type, typename Traits, typename Alloc>
     void swap(Basic_string<type, Traits, Alloc>& lhs,
             Basic_string<type, Traits, Alloc>& rhs){
-                a.Swap(b);
+                lhs.Swap(rhs);
             }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator==(const Basic_string<type, Traits, Alloc>& lhs,
+            const Basic_string<type, Traits, Alloc>& rhs){
+                if(lhs.compare(rhs) == 0) return true;
+                return false;
+            }  
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator!=(const Basic_string<type, Traits, Alloc>& lhs,
+            const Basic_string<type, Traits, Alloc>& rhs){
+                return !(lhs == rhs);
+            }  
     
 }
 
