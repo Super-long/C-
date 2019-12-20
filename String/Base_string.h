@@ -61,6 +61,21 @@ namespace String{
             
 
         private:
+#if __cplusplus > 201402L
+
+        using _sv_type = string_view;
+
+        //TODO 补充泛型继承的知识 搞清楚连接符 猜测像是&& ! 一样 还有其中的判断条件
+        //TODO 很重要
+        template<typename _Tp, typename _Res>
+        using if_sv = enable_if_t< //if string_view
+        __and_<is_convertible<const _Tp&, _sv_type>,
+            __not_<is_convertible<const _Tp*, const Basic_sting*>>,
+            __not_<is_convertible<const _Tp&, const type*>>
+            >::value,
+            _Res>;
+
+#endif
 /*------------------------------------------------*/
     //Following is to encapsulate the interface inplementation.  
 
@@ -591,7 +606,7 @@ static const size_type	npos = static_cast<size_type>(-1);
     }
 
     const type* 
-    data() noexcept{
+    data() const noexcept{
         if(_Data_is_local())
             return _Return_local_pointer();
         else 
@@ -631,6 +646,20 @@ static const size_type	npos = static_cast<size_type>(-1);
 
     size_type 
     find(type ch, size_type pos = 0) const noexcept;
+
+/**
+ * @ Supported find position of a string 
+*/
+#if __cplusplus > 201402L
+
+    template<typename _Tp>
+      if_sv<_Tp, size_type>
+      find(const _Tp& Tp, size_type pos = 0) const noexcept{
+          _sv_type sv = Tp; //隐式类型转换
+          return this->find(sv.data(), pos, sv.length());
+      }
+
+#endif
 
 };
 /*------------------------------------------------*/
@@ -721,17 +750,15 @@ static const size_type	npos = static_cast<size_type>(-1);
             const Basic_string<type, Traits, Alloc>& rhs){
                 if(lhs.compare(rhs) == 0) return true;
                 return false;
-            }  
+            }
 
     template<typename type, typename Traits, typename Alloc>
       inline bool 
       operator!=(const Basic_string<type, Traits, Alloc>& lhs,
             const Basic_string<type, Traits, Alloc>& rhs){
                 return !(lhs == rhs);
-            }  
+            }
     
 }
-
-
 
 #endif
