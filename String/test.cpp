@@ -7,9 +7,12 @@ using namespace std;
 int main(){
     using std::cout;
     using std::endl;
-    string str = "abcdefghijklmnopqrstuvwxyzabcdefghijklmn";
-    int x = str.find("fghidjk", 0 , 7);;
-    string TT(str);
-    char* bok = "def";
-    cout << TT.find(bok, 0, 3) << endl;
+    const char book[] = "abcdefghijklmnopqrstuvwxyzabcdefghijklmn";
+    string S(book);
+    string T("ghijk");
+    string TT;
+    //T.append(10, 'a');
+    cout << S.find_first_not_of(T,20) << endl;
+    cout << S.find_first_not_of('m', 20) << endl;
+    cout << S.find_first_not_of("ijk", 20, 3) << endl;
 }

@@ -648,7 +648,7 @@ static const size_type	npos = static_cast<size_type>(-1);
     find(type ch, size_type pos = 0) const noexcept;
 
 /**
- * @ Supported find position of a string 
+ * @ Supported find position of a string_view 
 */
 #if __cplusplus > 201402L
 
@@ -660,6 +660,125 @@ static const size_type	npos = static_cast<size_type>(-1);
       }
 
 #endif
+
+    size_type 
+    _rfind(type ch, size_type pos = 0) const noexcept;
+
+    size_type 
+    _rfind(const type* str, size_type pos, size_type n) const noexcept;
+
+    size_type
+    rfind(const type* str, size_type pos = npos)
+    const{
+        return _rfind(str, pos, strlen(str));
+    }
+
+    size_type
+    rfind(const type* str, size_type pos, size_type n)
+    const{
+        return _rfind(str, pos, n);
+    }
+
+    size_type
+    rfind(const Basic_string& str, size_type pos = npos)
+    const noexcept{
+        return _rfind(str._Return_pointer(), pos, strlen(str._Return_pointer()));
+    }
+
+    size_type
+    rfind(type ch, size_type pos = npos)
+    const noexcept{
+        return _rfind(ch, pos);
+    }
+
+    size_type
+    find_first_of(const type* str, size_type pos, size_type n)
+    const noexcept;
+
+    size_type
+    find_first_of(type ch, size_type pos = 0){
+        return this->find(ch, pos);
+    }
+
+    size_type
+    find_first_of(const Basic_string& str, size_type pos = 0)
+    const noexcept{
+        return find_first_of(str._Return_pointer(), pos, str.size());
+    }
+
+    size_type
+    find_first_of(const type* str, size_type pos = 0)
+    const noexcept{
+        return find_first_of(str, pos, strlen(str));
+    }
+
+    size_type
+    find_last_of(const type* str, size_type pos, size_type n)
+    const noexcept;
+
+    size_type
+    find_last_of(type ch, size_type pos = 0){
+        return this->rfind(ch, pos);
+    }
+
+    size_type
+    find_last_of(const Basic_string& str, size_type pos = 0)
+    const noexcept{
+        return find_last_of(str._Return_pointer(), pos, str.size());
+    }
+
+    size_type
+    find_last_of(const type* str, size_type pos = 0)
+    const noexcept{
+        return find_last_of(str, pos, strlen(str));
+    }
+
+    size_type
+    find_first_not_of(const type* str, size_type pos, size_type n)
+    const noexcept;
+
+    size_type
+    find_first_not_of(type ch, size_type pos)
+    const noexcept;
+
+    size_type
+    find_first_not_of(type ch, size_type pos = 0){
+        return this->find_first_not_of(ch, pos);
+    }
+
+    size_type
+    find_first_not_of(const Basic_string& str, size_type pos = 0)
+    const noexcept{
+        return find_first_not_of(str._Return_pointer(), pos, str.size());
+    }
+
+    size_type
+    find_first_not_of(const type* str, size_type pos = 0)
+    const noexcept{
+        return find_first_not_of(str, pos, strlen(str));
+    }
+
+    size_type
+    find_last_not_of(const type* str, size_type pos, size_type n)
+    const noexcept;
+    
+    size_type
+    find_last_not_of(type ch, size_type pos = 0)
+    const noexcept;
+
+    size_type
+    find_last_not_of(const Basic_string& str, size_type pos = 0)
+    const noexcept{
+        return find_last_not_of(str._Return_pointer(), pos, str.size());
+    }
+
+    size_type
+    find_last_not_of(const type* str, size_type pos = 0)
+    const noexcept{
+        return find_last_not_of(str, pos, strlen(str));
+    }
+
+
 
 };
 /*------------------------------------------------*/

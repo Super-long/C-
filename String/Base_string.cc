@@ -364,11 +364,136 @@ namespace String{
           return ret;
       }
 
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+       _rfind(const type* str, size_type pos, size_type n)
+        const noexcept{
+            const size_type length = this->size();
+            pos = std::min(length - n, pos);
+            if(n <= length){
+                const type* _data = _Return_pointer();
+                do{
+                    if(Traits::compare(_data + pos, str, n) == 0)
+                    return pos - 1;
+                }while(pos-- > 0);
+            }
+            return npos;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      _rfind(type ch, size_type pos)
+      const noexcept{
+          size_type length = this->length();
+          if(length){
+              if(length > pos)
+                length = pos;
+                for(; length-- > 0; ){
+                    if(_Return_pointer()[length] == ch)
+                        return length;
+                }
+          }
+          return npos;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      find_first_of(const type* str, size_type pos, size_type n)
+      const noexcept{
+            for(; n && pos < this->size(); ++pos){
+                const type* ptr = Traits::find(str, n, _Return_pointer()[pos]);
+                if(ptr) return pos; 
+          }
+          return npos;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      find_last_of(const type* str, size_type pos, size_type n)
+      const noexcept{
+          size_type Temp = strlen(str);
+          if(n > Temp) n = Temp;
+
+          size_type len = this->size();
+          if(len && n){
+              if(len > pos){
+                  len = pos;
+              }
+              for(;len > 0; --len){
+                  if(Traits::find(str, n, _Return_pointer()[len])) 
+                    return len;
+              }
+          }
+          return npos;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      find_first_not_of(const type* str, size_type pos, size_type n)
+      const noexcept{
+          size_type len = strlen(str);
+          if(n < 0 || n > len) n = len;
+          if(pos < 0 || pos > this->size()) pos = 0;
+
+          for(; pos < this->size(); ++pos)
+            if(!Traits::find(str, n, _Return_pointer()[pos]))
+              return pos;
+        return npos;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      find_first_not_of(type ch, size_type pos)
+      const noexcept{
+          if(pos < 0 || pos > this->size()) pos = 0;
+
+          for(; pos < this->size(); ++pos)
+            if(!Traits::eq(_Return_pointer()[pos], ch))
+              return pos;
+        return npos;     
+      }
+
+
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      find_last_not_of(const type* str, size_type pos, size_type n)
+      const noexcept{
+          size_type len = strlen(str);
+          if(n < 0 || n > len) n = len;
+          if(pos < 0 || pos > this->size()) pos = this->size() - 1;
+
+          for(; pos > 0; --pos)
+            if(!Traits::find(str, n, _Return_pointer()[pos]))
+              return pos;
+        return npos;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      typename Basic_string<type, Traits, Alloc>::size_type
+      Basic_string<type, Traits, Alloc>::
+      find_last_not_of(type ch, size_type pos)
+      const noexcept{
+          if(pos == npos || pos > this->size()) pos = this->size() - 1;
+        
+          if(pos > 0)
+          for(; pos >= 0; --pos)
+            if(!Traits::eq(_Return_pointer()[pos], ch))
+              return pos;
+        return npos;     
+      }
+
 }
 
 /**
  * @在其中得到的收获
  * 1.仔细思考 为自己在写的东西提供一套泛型的接口 可以避免大量无意义的工作
  * 2.擅于使用库
- * 3.string的find方法效率低下
+ * 3.string的find族方法效率低下 大于N 不建议使用
 */
