@@ -308,6 +308,81 @@ namespace String{
                 _S_SetUp_length(str.length());
             }
 
+/**
+ * @ The standard library approach is expanding when _str.size() > initial_capacity.
+ * if old_capacity less than new_length, we can save time without expanding. But this
+ * is likely to waste space.
+*/
+            Basic_string& 
+            operator=(const Basic_string& _str){
+                if(this == &str) return *this;
+
+#if __cplusplus >= 201103L
+                if(_Return_pointer() && 
+                get_allocator() != _str.get_allocator()){
+                    if(_str.size() < initial_capacity){
+                        _S_Delete();
+                        _S_SetUp_date(initial_buf);
+                        _S_SetUp_length(_str.length());
+                    }else if(_str.size() <= this->capacity()){
+                        //we should weigh space and time. I choose time...
+                        Traits::copy(_Return_pointer(),_str._Return_pointer(), _str.length());
+                        _S_SetUp_length(_str.length());
+                    }else{
+                        const size_type len = _str.size();
+                        auto alloc = _str.get_allocator();
+                        auto ptr = alloc.allocate(len + 1);
+                        _S_Delete();
+                        _S_SetUp_date(ptr);
+                        _S_SetUp_capacity(len);
+                        _S_SetUp_length(len);
+                    }
+                }
+                std::__alloc_on_copy(get_allocator(), alloc);
+#endif
+            return this->assign(_str);
+            }
+
+            Basic_string& 
+            operator=(const type* str){
+                return this->assign(str);
+            }
+
+            Basic_string&
+            operator=(type ch){
+                return this->assign(1, ch);
+            }
+
+#if __cplusplus >= 201103L
+            Basic_string& 
+            operator=(Basic_string&& _str){
+                if(!_Return_pointer() 
+                && get_allocator() != _str.get_allocator()){
+                    //Guaranteed exception safety. ::Basic guarantee.
+                    _S_Delete(); 
+                    _S_SetUp_capacity(initial_capacity);
+                    _S_SetUp_date(initial_buf);
+                    _S_SetUp_length(0);
+                }
+                std::__alloc_on_move(get_allocator(), _str.get_allocator());
+
+                if(!_str._Data_is_local()){
+                    _S_SetUp_date(_str._Return_pointer());
+                    _S_SetUp_length(_str.size());
+                    _S_SetUp_capacity(_str.capacity());
+                    //Guaranteed destructor safety.
+                    _str._S_SetUp_date(_str.initial_buf);
+                }else{
+                    this->assign(_str);
+                }
+                return *this;
+            }
+
+        ~Basic_string(){
+            _S_Delete();
+        }
+#endif
+
 /*------------------------------------------------*/
         //Following is a capacity function.
 
@@ -578,18 +653,17 @@ static const size_type	npos = static_cast<size_type>(-1);
         if(len_a < len_b) return -1;
         else if(len_a > len_b) return 1;
 
-        bool is_a = _Data_is_local();
-        bool is_b = str._Data_is_local();
+        return traits::compare(_Return_pointer(), str._Return_pointer(), len_a);
+    }
 
-        if(is_a && is_b){
-            return traits::compare(_Return_local_pointer(), str._Return_local_pointer(), len_a);    
-        }else if(!is_a && !is_b){
-            return traits::compare(_Return_pointer(), str._Return_pointer(), len_a);
-        }else if(!is_a && is_b){
-            return traits::compare(_Return_pointer(), str._Return_local_pointer(), len_a);
-        }else{
-            return traits::compare(_Return_local_pointer(), str._Return_pointer(), len_a);
-        }
+    int compare(const type* str) const{
+        const size_type len_a = strlen(str);
+        const size_type len_b = str.size();
+
+        if(len_a < len_b) return -1;
+        else if(len_a > len_b) return 1;
+
+        return traits::compare(_Return_pointer(), str, len_a);        
     }
 
     const type* 
@@ -778,11 +852,23 @@ static const size_type	npos = static_cast<size_type>(-1);
         return find_last_not_of(str, pos, strlen(str));
     }
 
-
-
+    Basic_string 
+    substr(size_type pos = 0, size_type n = npos) const{
+        if(pos > this->size()) pos = this->size();
+        return Basic_string(*this, pos, n);
+    }
 };
 /*------------------------------------------------*/
     //Following is a Non-member function overloads
+
+/**
+ * @ In standard library, Following function only has a part of
+ * have noexcept. But in my library, all the function has this qualifer,
+ * because in my library, if parameter out of boundary, I will set it
+ * as the default parameter, but std will throw out_of_range.
+ * 
+ * @ Following is so boring. 
+ */
 
     template<typename type, typename Traits, typename Alloc>
       Basic_string<type, Traits, Alloc> //RVO
@@ -859,25 +945,139 @@ static const size_type	npos = static_cast<size_type>(-1);
 
     template<typename type, typename Traits, typename Alloc>
     void swap(Basic_string<type, Traits, Alloc>& lhs,
-            Basic_string<type, Traits, Alloc>& rhs){
+            Basic_string<type, Traits, Alloc>& rhs) noexcept{
                 lhs.Swap(rhs);
             }
 
     template<typename type, typename Traits, typename Alloc>
       inline bool 
       operator==(const Basic_string<type, Traits, Alloc>& lhs,
-            const Basic_string<type, Traits, Alloc>& rhs){
+            const Basic_string<type, Traits, Alloc>& rhs) noexcept{
                 if(lhs.compare(rhs) == 0) return true;
                 return false;
             }
 
     template<typename type, typename Traits, typename Alloc>
       inline bool 
+      operator==(const Basic_string<type, Traits, Alloc>& lhs,
+      type* rhs)noexcept{
+            if(lhs.compare(rhs) == 0) return true;
+            return false;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator==(type* lhs,
+      const Basic_string<type, Traits, Alloc>& rhs)noexcept{
+          if(rhs.compare(lhs)) return true;
+          return false;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
       operator!=(const Basic_string<type, Traits, Alloc>& lhs,
-            const Basic_string<type, Traits, Alloc>& rhs){
+            const Basic_string<type, Traits, Alloc>& rhs)noexcept{
                 return !(lhs == rhs);
             }
     
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator!=(const Basic_string<type, Traits, Alloc>& lhs,
+      type* rhs)noexcept{
+            return !(lhs == rhs);
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator!=(type* lhs,
+      const Basic_string<type, Traits, Alloc>& rhs)noexcept{
+            return !(lhs == rhs);
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator<(const Basic_string<type, Traits, Alloc>& lhs,
+            const Basic_string<type, Traits, Alloc>& rhs)noexcept{
+                return lhs.compare(rhs) < 0;
+            }
+    
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator<(const Basic_string<type, Traits, Alloc>& lhs,
+      type* rhs)noexcept{
+            return lhs.compare(rhs) < 0;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator<(type* lhs,
+      const Basic_string<type, Traits, Alloc>& rhs)noexcept{
+            return rhs.compare(lhs) >= 0;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator<=(const Basic_string<type, Traits, Alloc>& lhs,
+            const Basic_string<type, Traits, Alloc>& rhs) noexcept{
+                return lhs.compare(rhs) <= 0;
+            }
+    
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator<=(const Basic_string<type, Traits, Alloc>& lhs,
+      type* rhs)noexcept{
+            return lhs.compare(rhs) <= 0;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator<=(type* lhs,
+      const Basic_string<type, Traits, Alloc>& rhs)noexcept{
+            return rhs.compare(lhs) > 0;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator>(const Basic_string<type, Traits, Alloc>& lhs,
+            const Basic_string<type, Traits, Alloc>& rhs)noexcept{
+                return lhs.compare(rhs) > 0;
+            }
+    
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator>(const Basic_string<type, Traits, Alloc>& lhs,
+      type* rhs)noexcept{
+            return lhs.compare(rhs) > 0;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator>(type* lhs,
+      const Basic_string<type, Traits, Alloc>& rhs)noexcept{
+            return rhs.compare(lhs) <= 0;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator>=(const Basic_string<type, Traits, Alloc>& lhs,
+            const Basic_string<type, Traits, Alloc>& rhs) noexcept{
+                return lhs.compare(rhs) >= 0;
+            }
+    
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator>=(const Basic_string<type, Traits, Alloc>& lhs,
+      type* rhs)noexcept{
+            return lhs.compare(rhs) >= 0;
+      }
+
+    template<typename type, typename Traits, typename Alloc>
+      inline bool 
+      operator>=(type* lhs,
+      const Basic_string<type, Traits, Alloc>& rhs)noexcept{
+            return rhs.compare(lhs) < 0;
+      }
+
 }
 
 #endif
