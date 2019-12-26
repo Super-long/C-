@@ -813,7 +813,8 @@ static const size_type	npos = static_cast<size_type>(-1);
 
     size_type
     find_first_not_of(type ch, size_type pos)
-    const noexcept;
+    const noexcept; 
+    
 
     size_type
     find_first_not_of(type ch, size_type pos = 0){
