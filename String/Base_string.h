@@ -45,6 +45,12 @@ namespace String{
     
             //TODU 迭代器和反向迭代器
         
+        public:
+            class iterator{
+                public: 
+                    using iterator_category = random_access_itreator_tag;
+                    
+            }
         
         
         private:
@@ -814,7 +820,6 @@ static const size_type	npos = static_cast<size_type>(-1);
     size_type
     find_first_not_of(type ch, size_type pos)
     const noexcept; 
-    
 
     size_type
     find_first_not_of(type ch, size_type pos = 0){
