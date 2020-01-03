@@ -100,8 +100,8 @@ public class unit_5{
         }
         //int a = scanner.nextInt();
         //int b = scanner.nextInt();
-        BigDecimal aa = new BigDecimal(5.646461651651);
-        BigDecimal bb = new BigDecimal(5.646461651651);
+        float aa = new float(5.646461651651);
+        float bb = new float(5.646461651651);
         if(aa.equals(bb)) System.out.println("same");
         else System.out.println("no same");
         //==判断两个对象是否是一个对象 equals判断两个对象的其中的值是否相同
