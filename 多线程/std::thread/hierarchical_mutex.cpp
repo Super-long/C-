@@ -13,6 +13,7 @@ class hierarchical_mutex{
         //这个限定符非常精髓
 
         void check_for_hierarchy() noexcept(false) {
+            //等于号 : 锁定后在lock自己当然也是错的
             if(this_thread_hierarchical_value <= hierarchical_value){
                 throw logic_error("mutex hierarchical violated.");
             }
@@ -24,7 +25,7 @@ class hierarchical_mutex{
         }
     
     public:
-        explicit hierarchical_mutex(uint64_t value) : 
+        constexpr explicit hierarchical_mutex(uint64_t value) : 
             hierarchical_value(value), previous_value(0) {}
 
         void lock() noexcept(false) {
@@ -46,7 +47,7 @@ class hierarchical_mutex{
         }
 };
 
-thread_local uint64_t 
+thread_local uint64_t //容易忘记初始化
     hierarchical_mutex::this_thread_hierarchical_value = ULONG_MAX;
 
 hierarchical_mutex high_level_mutex(10000);
@@ -55,6 +56,7 @@ hierarchical_mutex low_level_mutex(5000);
 void high_level_fun(){
     std::lock_guard<hierarchical_mutex> guard1(high_level_mutex);
     std::lock_guard<hierarchical_mutex> guard2(low_level_mutex);
+    std::unique_lock<hierarchical_mutex> a;
     hierarchical_mutex other(6000);
     //std::lock_guard<hierarchical_mutex> guard3(other);
     //加上以后就会抛错

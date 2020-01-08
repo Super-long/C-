@@ -17,7 +17,7 @@ class X{
              * 在另一个使用同样两个对象的锁的时候顺序不同 就可能造成死锁
             */
             //lock帮我们实现的是两个锁要一起使用时的全或无的语义 这样可以避免死锁 但两个锁分开就没办法了
-            std::lock(lhs.m, rhs.m);
+            std::lock(lhs.m, rhs.m);//感觉adopt_lock就是为了这种情况而存在的
             std::lock_guard<std::mutex> lock_a(lhs.m, std::adopt_lock);
             std::lock_guard<std::mutex> lock_b(rhs.m, std::adopt_lock);
             //std::adopt_lock 只有一个作用: 此锁已经上锁 在lock_guard构造函数里面不用给这个锁上锁了
