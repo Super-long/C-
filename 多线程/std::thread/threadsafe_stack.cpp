@@ -7,8 +7,7 @@
 #include <iostream> //for debugging
 #include <algorithm> //for_each
 #include <functional> //mem_fn
-#include <atomic>
-#include <unistd.h>
+
 struct empty_stack : std::exception{
     const char* what() const throw(){ //Equivalent to noexcept
         exception::what();
@@ -100,6 +99,7 @@ void Push(){
         std::cout << "empty stack.\n";
     }
 } */
+
 template<typename Type>
 void Pop(Type& Temp){
     try{
@@ -121,7 +121,10 @@ int main(){
             threads[i] = std::thread(Push);
         else{ 
             threads[i] = std::thread(Pop<int>, std::ref(array_[i]));
-            std::cout << emp << std::endl;
+            //std::cout << emp << std::endl;
+            /**
+             * 上面的打印纯属sb行为 线程跑去执行别的函数了 主线程直接执行cout 当然打印的不对了
+            */
         }
     }
     std::for_each(threads.begin(), threads.end(), std::mem_fn(&std::thread::join));   
