@@ -22,7 +22,7 @@ int main(){
     //auto f1 = std::async(&x::foo, X, 40, "one"); 
     //auto f2 = std::async(&x::bar, X, "two"); //自动推断成future
 
-    std::packaged_task<decltype(test)> T(test);
+    std::packaged_task<decltype(test)> T(test);//成员函数得bind一下
     T("hello");
     auto TT = T.get_future();
     cout << TT.get() << endl; //返回值会使得内部的值失效 因为get实现中对值调用了std::move
