@@ -7,7 +7,7 @@
 #include <iostream> //for debugging
 #include <algorithm> //for_each
 #include <functional> //mem_fn
-#include <condition_variable>
+#include <condition_variable> //condition_variable
 
 template<typename Type>
 class threadsafe_queue
