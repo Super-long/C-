@@ -23,5 +23,5 @@ int main(){
         else vec[i] = std::thread(shared, std::ref(T));
     }
     for_each(vec.begin(), vec.end(), std::mem_fn(&std::thread::join));
-    return 0;    
+    return 0;
 }
