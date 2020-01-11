@@ -11,6 +11,7 @@ int main(){
     string S(book);
     string T("ghijk");
     string TT;
+    TT.begin();
     //T.append(10, 'a');
     cout << S.find_first_not_of(T,20) << endl;
     cout << S.find_first_not_of('m', 20) << endl;
