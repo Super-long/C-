@@ -15,6 +15,16 @@ void update_data(){
     std::atomic_store(&ptr, local);
 }
 
+void foo(int lhs, int rhs){
+    cout << lhs << " " << rhs << endl;
+}
+
+int get_num(){
+    static int i = 0;
+    return ++i;
+}
+
 int main(){
-    
+    foo(get_num(), get_num());
+    return 0;
 }
