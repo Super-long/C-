@@ -5,6 +5,10 @@ class one : public std::atomic<int>{
     //允许用户创建一个用户定义的类型的原子变种
     private:
         int on;
+    public:
+        void show(){
+            cout << on << endl;
+        }
 };
 
 one Temp;
@@ -26,5 +30,7 @@ int main(){
     cout << Temp.load() << endl;
     //cout << TT << endl;
     cout << Temp.is_lock_free() << endl;
+    //实际还用的是库 所以还是谨慎使用
+    Temp.show();
     return 0;
 }
