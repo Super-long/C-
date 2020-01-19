@@ -44,4 +44,5 @@ int main(){
     cout << "one : " << one.show() << endl;
     cout << "two : " << two.show() << endl;
     return 0;
+    string
 }

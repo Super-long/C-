@@ -40,8 +40,9 @@ int main(){
     std::mutex mtx;
     mtx.lock();
     std::lock_guard<std::mutex> lk(mtx, std::adopt_lock);
-    std:;unique_lock<std::mutex> lk()
+    std:;unique_lock<std::mutex> lk();
     mtx.unlock();
     mtx.unlock();
+    atomic_flag
     return 0;
 }
