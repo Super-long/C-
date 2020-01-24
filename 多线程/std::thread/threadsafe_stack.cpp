@@ -79,7 +79,7 @@ class threadsafe_stack{
 
         //size操作在此类中可能引起多线程之间的问题 比如以size为判断条件 就可能出现在空栈取元素的情况
         size_t size() const {
-            std::lock_guard<std::mutex> lock(m);
+            std::lock_guard<std::mutex> lock(m); 
             return data.size();
         }
 };

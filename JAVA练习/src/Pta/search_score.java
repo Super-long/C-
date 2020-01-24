@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.*;
 
 public class search_score {
     public static void main(String[] args) {
@@ -33,7 +34,6 @@ public class search_score {
                 System.out.println(one);
                 break;
         }
-
     }
 }
 
