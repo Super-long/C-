@@ -67,6 +67,26 @@ T parallel_accumulate(Iterator lhs, Iterator rhs, T init){
     return result + last_result;
 }
 
+/**
+ * @ 使用async 由库保证异常安全 不会出现空悬线程
+ * @ 相对与packaged_task相比由库管理线程 能更好的利用get()的时间 效率更高
+*/
+template<typename Iterator, typename T> 
+T _parallel_accumulate(Iterator lhs, Iterator rhs, T init){
+    const unsigned long length = std::distance(lhs, rhs);
+    constexpr const unsigned long max_size = 64/sizeof(T);//cache line
+    if(length <= max_size){
+        return std::accumulate(lhs, rhs, init);
+    }else{
+        Iterator mid_point = lhs;
+        std::advance(mid_point, length/2);
+        auto first_half = 
+            std::async(_parallel_accumulate<Iterator, T>, lhs, mid_point, init);
+        auto second_result = _parallel_accumulate(mid_point, rhs, init);
+        return first_half.get() + second_result;
+    }
+}
+
 int main(){
     std::vector<int> vec;
 
@@ -76,5 +96,5 @@ int main(){
     for(int i=0;i<100000;++i){
         vec.emplace_back(distribution(generator));
     }
-    cout << parallel_accumulate(vec.begin(), vec.end(), 0) << endl;
+    cout << _parallel_accumulate(vec.begin(), vec.end(), 0) << endl;
 }
