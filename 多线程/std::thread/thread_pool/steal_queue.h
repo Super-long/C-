@@ -16,6 +16,11 @@ public:
     work_stealing_queue(const work_stealing_queue&) = delete;
     work_stealing_queue& operator=(const work_stealing_queue&) = delete;
 
+    size_t size() const {
+        std::lock_guard<std::mutex> lk(mu);
+        return work_queue.size();
+    } 
+
     bool empty() const {
         std::lock_guard<std::mutex> lk(mu);
         return work_queue.empty();

@@ -1,6 +1,12 @@
 #include <bits/stdc++.h>
 using namespace std;
-#include "Thread_pool.h"
+#include "Thread_pool_2.h"
+
+
+/**
+ * 这种线程池思路固然好 但是实际作用不大 除非每个线程都有push的权利 实际都在pool中
+ * @ 每个线程干自己的事情才是效率最高的
+*/
 
 atomic<int> Count(0);
 
