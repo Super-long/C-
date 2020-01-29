@@ -1,26 +1,12 @@
-#ifndef THREAD_POOL
-#define THREAD_POOL
+#ifndef THREAD_POOL_H
+#define THREAD_POOL_H
 
 #include "Threadsafe_Queue.h" //Threadsafe_Queue
 #include "function_wrapper.h" //function_wrapper
+#include "join_threads.h" //join_threads
 #include <thread> //thread
 #include <atomic> //atomic_bool
 #include <future> //future packaged_task
-
-class join_threads{
-    std::vector<std::thread>& threads;
-    public: 
-        explicit join_threads(std::vector<std::thread>& thread_) 
-            : threads(thread_) {}
-        join_threads() = delete;
-
-        ~join_threads(){
-            for(size_t i = 0; i < threads.size(); i++){
-                if(threads[i].joinable())
-                    threads[i].join();
-            }
-        }
-};
 
 class thread_pool{
     private:
@@ -32,7 +18,7 @@ class thread_pool{
         void work_thread(){
             while(!done){ //implenebt of spin-lock, and can be implemented as condition_variable.
                 function_wrapper Task;
-                if(work_queue.try_pop(Task)){ //感觉可以wait
+                if(work_queue.try_pop(Task)){
                     Task();
                 }else{
                     std::this_thread::yield();
@@ -44,7 +30,7 @@ class thread_pool{
         thread_pool() : done(false), joiner(threads) {
             try{
                 unsigned int count = std::thread::hardware_concurrency();
-                for(size_t i = 0; i < count; i++){
+                for(size_t i = 0; i < (count - 1); i++){
                     threads.emplace_back(std::thread(&thread_pool::work_thread,this));
                 }
             }catch(...){
@@ -65,7 +51,15 @@ class thread_pool{
             work_queue.push(std::move(Task));
             return res;
         }
+
+        void run_penging_task(){
+            function_wrapper Task;
+            if(work_queue.try_pop(Task)){
+                Task();
+            }else{
+                std::this_thread::yield();
+            }
+        }
 };
 
-
-#endif //THREAD_POOL
+#endif //THREAD_POOL_H_
