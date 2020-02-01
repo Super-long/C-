@@ -18,11 +18,13 @@ class Observer_ : public Observer{
 private:
     std::weak_ptr<Observable> subject_; //保证析构时subject_存在
 public:
-    Observer_(std::shared_ptr<Observable> para)
-         : subject_(para){}
 
     void update() override {
 
+    }
+
+    void observe(Observable* para){
+        para->Register(std::shared_ptr<Observer>(this));
     }
 
     ~Observer_(){
@@ -50,14 +52,14 @@ Observable::Register(const std::weak_ptr<Observer>& para){
     observers.push_back(para);
 }
 
-void
+/* void
 Observable::unRegister(const std::weak_ptr<Observer>& para){
     std::lock_guard<std::mutex> guard(mutex_);    
     std::find_if(observers.begin(), observers.end(), 
     [&](const Iterator& item){
         if(para == item) return true; //如何删除一个weak_ptr
     });
-}
+} */
 
 void 
 Observable::notifyObservers(){

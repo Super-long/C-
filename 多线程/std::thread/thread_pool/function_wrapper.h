@@ -7,7 +7,7 @@ class function_wrapper{
     struct base_type{
         virtual void call() = 0;
         virtual ~base_type() {}
-    }; //为了能有一个指针可以指向下面这个对象 不这样类型没办法指定
+    };
     std::unique_ptr<base_type> ptr;
     template<typename T>
     struct wrapper_type : base_type{
