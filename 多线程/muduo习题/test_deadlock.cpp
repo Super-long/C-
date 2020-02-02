@@ -2,6 +2,8 @@
 using namespace std;
 #include<unistd.h>
 
+//未解决析构的race condition,但是并不难 可以通过上一单元的弱回调完成
+
 class Request;
 class Inventory{
 public:
