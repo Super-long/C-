@@ -7,6 +7,14 @@
 #include <functional> //function
 #include <boost/noncopyable.hpp> // noncopyable
 
+/**
+ * @ 逻辑上有修改的余地
+ * 1.在call中可设置绑定的参数存在即可调用
+ * 2.SlotImpl的析构函数中可以调用clean 但是进行删除时
+ * 
+ * //没啥修改的了
+*/
+
 template<typename Callback>
 struct SlotImpl;
 
@@ -17,7 +25,6 @@ struct SignalImpl : boost::noncopyable{
     SignalImpl() : slots_(new Slotlist){}
 
     void CopyOnWrite(){ //用于修改时不进行插入
-        std::lock_guard<std::mutex> guard(mutex_);
         if(!slots_.unique()){
             slots_.reset(new Slotlist(*slots_));
         }
@@ -43,26 +50,24 @@ struct SignalImpl : boost::noncopyable{
 
 template<typename Callback>
 struct SlotImpl : boost::noncopyable{
-public:
     using Data = SignalImpl<Callback>;
-private:
+
     std::weak_ptr<Data> data_;
     Callback cb_;
     std::weak_ptr<void> tie_;
     bool tied_;
-public:
+
     SlotImpl(const std::shared_ptr<Data>& data, Callback&& cb)
         :data_(data), cb_(cb), tie_(), tied_(false){}
     
-    SlotImpl(const std::shared_ptr<Data>& data, Callback&& cb, const std::shared_ptr<void>* tie)
+    SlotImpl(const std::shared_ptr<Data>& data, Callback&& cb, const std::shared_ptr<void>& tie)
         :data_(data), cb_(cb), tie_(tie), tied_(true){}
     
     ~SlotImpl(){
-        //事实上并没有给一个其他对象拿到的SlotImpl一个接口去使用signalImpl
-/*         auto data(data_.lock());
+        auto data(data_.lock());
         if(data){
-
-        } */
+            data->clean();
+        }
     }
 };
 
@@ -82,7 +87,7 @@ public:
 
     //~Signal(){} //一个奇怪的链接问题?
 
-    SlotComponent connect(Callback&& func){
+    Slot connect(Callback&& func){
         std::shared_ptr<SlotComponent> slot(
             new SlotComponent(pool, std::forward<Callback>(func))
         );
@@ -90,7 +95,7 @@ public:
         return slot;
     }
 
-    SlotComponent connect(Callback&& func, const std::shared_ptr<void>& tie){
+    Slot connect(Callback&& func, const std::shared_ptr<void>& tie){
         std::shared_ptr<SlotComponent> slot(
             new SlotComponent(pool, std::forward<Callback>(func), tie)
         );
@@ -106,7 +111,7 @@ public:
             //std::lock_guard<std::mutex> guard(impl.mutex_);
             slots = impl.slots_;
         }
-        typename SignalComponent::SlotList& List(*slots); //为什么要这样用 直接指针使用不好吗
+        typename SignalComponent::Slotlist& List(*slots); //为什么要这样用 直接指针使用不好吗
         for(auto item : List){
             std::shared_ptr<SlotComponent> slot = item.lock();
             if(slot){
