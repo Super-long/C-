@@ -33,6 +33,17 @@ int main(){
 	    return;
     }
  
+    for(size_t i = 0; i < 10000; i++)
+    {
+        char buffer[256];
+        memset(buffer, 0, sizeof buffer);
+        char str1[] = "li";
+        char str2[] = "zhaolong";
+        sprintf(buffer, "insert into test_(fristname,lastname) values('%s', '%s')",str1, str2);
+        mysql_real_query(&mysql, buffer, strlen(buffer));
+    }
+    
+
     /* 设置查询语句 */
     query_str = "select * from emp";
     rc = mysql_real_query(&mysql, query_str, strlen(query_str));
