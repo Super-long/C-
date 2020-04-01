@@ -127,9 +127,9 @@ int stringmatchlen(const char *pattern, int patternLen,
 }
 
 int main(){
-    string partern="*t*st.*";
+    string partern="*t[ea]st.*";
     string one="sdatest.asdasd";
-    string two="testasd";
+    string two="tast.asd.";
     cout << stringmatchlen(partern.c_str(), partern.size(), one.c_str(), one.size(),0) << endl;
     cout << stringmatchlen(partern.c_str(), partern.size(), two.c_str(), two.size(),0) << endl;
     return 0;
