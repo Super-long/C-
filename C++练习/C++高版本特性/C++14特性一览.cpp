@@ -178,3 +178,5 @@ int main() {
     }
     return  0;
 }
+
+// g++ -std=c++14  C++14语法糖.cpp; ./a.out

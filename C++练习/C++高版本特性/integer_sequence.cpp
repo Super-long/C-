@@ -20,9 +20,10 @@ std::vector<std::size_t> make_index_vector(std::index_sequence<I...>) {
  *                      std::vector)
  * size_t... I        : indexing list of the contianer[0 ... N-1]
  */
+// 显然使用的是容器的前N个值 看名字就知道index_sequence是做下标的
 template <typename R, typename... Args, typename Container, size_t... I>
 R apply_impl(R (*func)(Args...), const Container& c, std::index_sequence<I...>) {
-    return (*func)(c[I]...);
+    return (*func)(c[I]...);   // c[I]挺骚
 }
 
 /*
@@ -69,9 +70,13 @@ int add(int a, int b) {
 
 int main() {
     std::vector<int> vt = {1, 2};
-    apply(context::add, vt);
+    // 这样在编译期就可以推导出函数的参数了
+    std::cout << apply(context::add, vt) << std::endl;
+
+    // 用容器的内容作为函数的参数
 
     using array_type = std::array<int, 10>;
+    // 这样显然只能是顺序的 更方便的赋初始值
     auto vec = make_index_vector(std::make_index_sequence<std::tuple_size<array_type>::value>());
     for (auto i : vec) {
         std::cout << i << ' ';
@@ -80,4 +85,3 @@ int main() {
 }
 
 // g++ integer_sequence.cpp -o integer_sequence --std=c++14]
-//
