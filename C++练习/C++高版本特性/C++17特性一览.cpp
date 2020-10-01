@@ -1,19 +1,25 @@
 #include<bits/stdc++.h>
 #include<tuple>
+#include<variant>
 using namespace std;
 
-#define one     (1)         // 构造函数模板推导
-#define two     (1<<2)      // 结构化绑定
-#define three   (1<<3)      // if-switch语句初始化
-#define four    (1<<4)      // 内联变量-->很有意思
-#define five    (1<<5)      // 折叠表达式，constexpr lambda表达式，namespace嵌套
-#define six     (1<<6)      // 
-#define seven   (1<<7)      // 
-#define eight   (1<<8)      // 
-#define nine    (1<<9)      // 
-#define ten     (1<<10)     // 
+#define one       (1)         // 构造函数模板推导
+#define two       (1<<2)      // 结构化绑定
+#define three     (1<<3)      // if-switch语句初始化
+#define four      (1<<4)      // 内联变量-->很有意思
+#define five      (1<<5)      // 折叠表达式，constexpr lambda表达式，namespace嵌套
+#define six       (1<<6)      // from_chars函数和to_chars 见其他文件
+#define seven     (1<<7)      // std::variant
+#define eight     (1<<8)      // std::optional
+#define nine      (1<<9)      // std::any
+#define ten       (1<<10)     // std::apply
+#define eleven    (1<<11)     // std::make_from_tuple
+#define twelve    (1<<12)     // std::string_view
+#define thirteen  (1<<13)     // std::file_system
+#define foutteen  (1<<14)     // 并行算法库
 
-int Switch = five;
+
+int Switch = twelve;
 
 //----------------------- 结构化绑定
 std::tuple<int, double> func_two() {
@@ -41,6 +47,25 @@ namespace A::B::C {
     void func();
 } */
 
+//----------------------- std::variant
+
+struct NoDefConstr_seven{
+    NoDefConstr_seven(int i){
+        std::cout << "NoDefConstr::NoDefConstr(int) called\n";
+    }
+};
+
+//----------------------- std::apply
+int add_ten(int first, int second) { return first + second; }
+
+auto add_ten_lambda = [](auto first, auto second) { return first + second; };
+
+//----------------------- 
+struct Foo_eleven {
+    Foo_eleven(int first, float second, int third) {
+        std::cout << first << ", " << second << ", " << third << "\n";
+    }
+};
 
 int main() {
     if (Switch&one){
@@ -108,13 +133,70 @@ int main() {
         动态分配内存，不能有new delete等，不能虚函数
       */
 
-    } else if (Switch&six){
-
     } else if (Switch&seven){
+      /**
+       * @ std::variant<> C++17
+       * @ 可代替union
+       * @ https://blog.csdn.net/janeqi1987/article/details/100568096
+      */
+      // variant类似于union，第一个参数必须拥有默认构造函数
+
+      std::variant<int, std::string> var{"hi"}; // initialized with string alternative
+      std::cout << var.index() << std::endl; // prints 1
+      var = 42; // now holds int alternative
+      std::cout << var.index() << std::endl; // prints 0
+      try {
+        std::string s = std::get<std::string>(var); // access by type
+        int i = std::get<0>(var); // access by index
+      }
+      catch (const std::bad_variant_access& e) { // in case a wrong type/index is used
+        std::cout << "hello\n";
+      }
+
+      // std::variant<NoDefConstr_seven, int> v1; 第一个参数没有构造函数　编译失败
+      // std::monostate就是防止全部的参数都没有默认构造函数
+      std::variant<std::monostate, NoDefConstr_seven, int> v2;
 
     } else if (Switch&eight){
+      // C++干货系列——C++17新特性之std::optional : https://zhuanlan.zhihu.com/p/251306766
+      // 其实就是为了杜绝以前在返回值无效的时候返回的magic值
 
-    } else if (Switch&ten){
+    } else if (Switch&nine){
+      // 一般顶多variant就足够用了，何必用Any呢 但在极端情况下，用any总比用void*强得多
+      // 鼓励实现避免小对象的动态分配
+      std::any a = 1;
+      cout << a.type().name() << " " << std::any_cast<int>(a) << endl;
+      a = 2.2f;
+      cout << a.type().name() << " " << std::any_cast<float>(a) << endl;
+      if (a.has_value()) {
+          cout << a.type().name() << std::endl;
+      }
+      a.reset();
+      // 可以这样判断类型
+      // assert(a1.type() == typeid(int));
+      if (a.has_value()) {
+          cout << a.type().name() << std::endl;
+      }
+      a = std::string("a");
+      // 这个string的类型名是真的恶心
+      cout << a.type().name() << ": " << std::any_cast<std::string>(a) << endl;
+    
+    } else if(Switch&ten){
+      
+      std::cout << std::apply(add_ten, std::pair(1, 2)) << '\n';
+      //std::cout << add(std::pair(1, 2)) << "\n"; // error
+      std::cout << std::apply(add_ten_lambda, std::tuple(2.2f, 3.0f)) << '\n';
+    
+    } else if(Switch&eleven){
+
+      auto tuple = std::make_tuple(42, 3.14f, 0);
+      std::make_from_tuple<Foo_eleven>(std::move(tuple));
+
+    } else if(Switch&twelve){
+      // string_view的substr与构造时间复杂度为O(1),且不会产生拷贝
+      // substr只是一个指针操作
+      // C++17,使用 string_view 来避免复制 https://blog.csdn.net/tkokof1/article/details/82527370?utm_source=blogxgwz3
+      // C++17 string_view的高效以及陷阱 https://www.jianshu.com/p/1a5a4b3b2615
 
     }
 }
