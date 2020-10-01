@@ -17,6 +17,7 @@ using namespace std;
 #define twelve    (1<<12)     // std::string_view
 #define thirteen  (1<<13)     // std::file_system
 #define foutteen  (1<<14)     // 并行算法库
+#define fifteen   (1<<15)     // constexpr if
 
 
 int Switch = twelve;
@@ -202,6 +203,8 @@ int main() {
       // 不仅仅是新加的七个 以前的stl算法也可以使用
       // [译]C++17,标准库新引入的并行算法 https://blog.csdn.net/tkokof1/article/details/82713700
       // STL并行算法库 https://blog.csdn.net/davidhopper/article/details/98309966
+    } else if(Switch&fifteen){
+      // C++17 之 "constexpr if" https://blog.csdn.net/ding_yingzi/article/details/79977747
     }
 }
 
