@@ -198,6 +198,10 @@ int main() {
       // C++17,使用 string_view 来避免复制 https://blog.csdn.net/tkokof1/article/details/82527370?utm_source=blogxgwz3
       // C++17 string_view的高效以及陷阱 https://www.jianshu.com/p/1a5a4b3b2615
 
+    } else if(Switch&foutteen){
+      // 不仅仅是新加的七个 以前的stl算法也可以使用
+      // [译]C++17,标准库新引入的并行算法 https://blog.csdn.net/tkokof1/article/details/82713700
+      // STL并行算法库 https://blog.csdn.net/davidhopper/article/details/98309966
     }
 }
 
