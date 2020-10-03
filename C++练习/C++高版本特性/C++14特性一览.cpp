@@ -12,8 +12,8 @@ using namespace std;
 #define six     (1<<6)      // 二进制字面量与整形字面量分隔符
 #define seven   (1<<7)      // std::make_unique
 #define eight   (1<<8)      // std::shared_timed_mutex与std::shared_lock
-#define nine    (1<<9)      // integer_sequence : 目前发现的用处就是把一个容器的每一项在编译器当做一个函数的参数
-#define ten     (1<<10)     // exchange
+#define nine    (1<<9)      // integer_sequence : 目前发现的用处就是把一个容器的每一项在编译期当做一个函数的参数
+#define ten     (1<<10)     // exchange 
 
 // 每个测试样例函数命名规则为func_测试编号
 
@@ -170,7 +170,8 @@ int main() {
 
     } else if (Switch&ten){
         std::vector<int> items;
-        std::exchange(items, {1,2,3,4});
+        std::vector<int> vec = {12,3,4,5};
+        std::exchange(items, vec);
         for (int x : items) {
             cout << x << " ";
         }

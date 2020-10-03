@@ -5,7 +5,7 @@ using namespace std;
 
 #define one       (1)         // 构造函数模板推导
 #define two       (1<<2)      // 结构化绑定
-#define three     (1<<3)      // if-switch语句初始化
+#define three     (1<<3)      // if-switch语句初始化 
 #define four      (1<<4)      // 内联变量-->很有意思
 #define five      (1<<5)      // 折叠表达式，constexpr lambda表达式，namespace嵌套
 #define six       (1<<6)      // from_chars函数和to_chars 见其他文件
@@ -20,7 +20,7 @@ using namespace std;
 #define fifteen   (1<<15)     // constexpr if
 
 
-int Switch = twelve;
+int Switch = thirteen;
 
 //----------------------- 结构化绑定
 std::tuple<int, double> func_two() {
@@ -183,7 +183,6 @@ int main() {
       cout << a.type().name() << ": " << std::any_cast<std::string>(a) << endl;
     
     } else if(Switch&ten){
-      
       std::cout << std::apply(add_ten, std::pair(1, 2)) << '\n';
       //std::cout << add(std::pair(1, 2)) << "\n"; // error
       std::cout << std::apply(add_ten_lambda, std::tuple(2.2f, 3.0f)) << '\n';
@@ -205,6 +204,13 @@ int main() {
       // STL并行算法库 https://blog.csdn.net/davidhopper/article/details/98309966
     } else if(Switch&fifteen){
       // C++17 之 "constexpr if" https://blog.csdn.net/ding_yingzi/article/details/79977747
+    } else if(Switch&thirteen){
+      namespace fs = std::filesystem;
+
+      fs::path pathToShow("/home/lzl/Desktop/execise");
+      cout << "exists() = " << fs::exists(pathToShow) << "\n"
+          << "root_name() = " << pathToShow.root_name() << "\n"
+          << "root_path() = " << pathToShow.root_path() << "\n";
     }
 }
 
