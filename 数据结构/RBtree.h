@@ -3,7 +3,7 @@
 
 #include <iomanip>
 #include <iostream>
-using namespace std;
+using namespace std; 
 
 enum RBTColor{RED, BLACK};
 
@@ -581,6 +581,7 @@ void RBTree<T>::removeFixUp(RBTNode<T>* &root, RBTNode<T> *node, RBTNode<T> *par
 {
     RBTNode<T> *other;
 
+    // 如果node是新的根 直接变为黑色就可以了
     while ((!node || rb_is_black(node)) && node != root)
     {
         if (parent->left == node)   // node为左侧节点
@@ -597,12 +598,13 @@ void RBTree<T>::removeFixUp(RBTNode<T>* &root, RBTNode<T> *node, RBTNode<T> *par
             if ((!other->left || rb_is_black(other->left)) &&
                 (!other->right || rb_is_black(other->right)))
             {
-                // Case 2: x的兄弟w是黑色，且w的俩个孩子也都是黑色的
+                // Case 2: x的兄弟w是黑色，且w的俩个孩子也都是黑色的 
+                // TODO parent应该设置为黑色
                 rb_set_red(other);  // 此时经过parent的黑色节点路径小于不经过parent的
                 node = parent;
                 parent = rb_parent(node);
             }
-            else
+            else    // 兄弟节点的子节点必有红色
             {
                 if (!other->right || rb_is_black(other->right))
                 {
@@ -684,8 +686,8 @@ void RBTree<T>::remove(RBTNode<T>* &root, RBTNode<T> *node)
         // 用它来取代"被删节点"的位置，然后再将"被删节点"去掉。
         RBTNode<T> *replace = node;
 
-        // 获取后继节点
-        replace = replace->right;
+        // 获取后继节点 即大于key最小的值 TODO显然有两个取代节点都对 如何选择呢？
+        replace = replace->right;   // 显然必不为nullptr
         while (replace->left != NULL)
             replace = replace->left;
 
@@ -709,12 +711,9 @@ void RBTree<T>::remove(RBTNode<T>* &root, RBTNode<T> *node)
         color = rb_color(replace);
 
         // "被删除节点"是"它的后继节点的父节点"
-        if (parent == node)
-        {
+        if (parent == node) {
             parent = replace;
-        }
-        else
-        {
+        } else {
             // child不为空
             if (child)
                 rb_set_parent(child, parent);
