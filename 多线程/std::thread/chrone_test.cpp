@@ -32,7 +32,7 @@ int main(){
     auto start = std::chrono::high_resolution_clock::now(); 
     size_t lnum = 0;
     for(size_t i = 0; i < 100000000; i++){
-        ++lnum;
+        ++lnum; 
     }
     auto end = std::chrono::high_resolution_clock::now();
                                             //ratio参数a,b a秒为b个周期

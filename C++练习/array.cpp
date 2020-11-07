@@ -20,7 +20,7 @@ int test_array_3()
 	//c1.assign(4);
  
 	// display contents " 4 4 4 4"   
-	for (Myarray::const_iterator it = c1.begin();
+	for (Myarray::const_iterator it = c1.begin(); 
 		it != c1.end(); ++it)
 		std::cout << " " << *it; // 4 4 4 4
 	std::cout << std::endl;
