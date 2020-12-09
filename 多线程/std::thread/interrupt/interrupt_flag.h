@@ -10,13 +10,13 @@ private:
     std::mutex set_clear_mutex;
 
 public:
-    interrupt_flag() : flag(false), thread_cond(nullptr) {}
+    interrupt_flag() : flag(false), thread_cond(nullptr) {} 
 
     void set(){
         flag.store(true, std::memory_order_relaxed);
         std::lock_guard<std::mutex> guard(set_clear_mutex);
         if(static_cast<bool>(thread_cond)){ //用于主线程
-            thread_cond->notify_all();
+            thread_cond->notify_all(); 
         }
     }
 

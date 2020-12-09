@@ -26,7 +26,7 @@ public:
         internal_thread = std::thread([fun,&pro]{
             pro.set_value(&this_thread_interrupt_flag);
             try{
-                fun();
+                fun(); 
             }catch(thread_interrupted& ti){
                 //do something.
             }
@@ -56,8 +56,8 @@ public:
         this_thread_interrupt_flag.set_condition_variable(cv);
         interrupt_flag::RAII_cv Temp_RAII;
         interruption_point();
-        cv.wait_for(lk, std::chrono::milliseconds(1));
-        interruption_point();                
+        cv.wait_for(lk, std::chrono::milliseconds(1));  
+        interruption_point();
     }
 
     template<typename Predicate>
