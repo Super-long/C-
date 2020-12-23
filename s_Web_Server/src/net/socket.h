@@ -20,7 +20,7 @@ namespace ws{
             }
             explicit Socket(int fd) : Socket_fd_(fd){}
             explicit Socket(const Havefd& Hf) : Socket_fd_(Hf.fd()){}
-            explicit Socket(const Havefd&& Hf) : Socket_fd_(Hf.fd()){}
+            explicit Socket(Havefd&& Hf) : Socket_fd_(std::move(Hf.fd())){}
             
             virtual ~Socket() {if(Have_Close_) ::close(Socket_fd_);}
             

@@ -25,7 +25,7 @@ namespace ws{
         Content_Provider_ = std::make_unique<ContentProvider>(Http_Request_, Write_Loop_);
     }
 
-    bool Member::CloseAble() const{
+    bool Member::CloseAble() const {
         if(Http_Request_->Return_Flag() != Keep_Alive && Http_Parser_->Finished()) return true;
         return false;
     }

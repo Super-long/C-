@@ -15,9 +15,11 @@ namespace ws{
         return old_option;
     } 
 
+    // ET导致我们不能在缓冲区满的时候不读取数据；
     int Socket::Read(std::shared_ptr<UserBuffer> ptr, int length, int flag){
 
-        if(length == -1 || length > ptr->Writeable()){  
+        if(length == -1 || length > ptr->Writeable()){ 
+            // 默认和超过限制以后的长度设置为缓冲区的可写大小；
             length = ptr->Writeable();
         }
         //deepin 15.7 x86 long int
@@ -29,10 +31,16 @@ namespace ws{
             if(ret != -1){
                 sum += ret;
                 ptr->Write(ret);
-            }else if(ret < 0){//&& errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR
+            }else if(ret < 0){// 其实就是ret==-1 //&& errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR
+                if(errno == EAGAIN || errno == EWOULDBLOCK){
+                    break;
+                } else if (errno == EINTR){
+                    continue;
+                }
+                // 还有很多其他的可能性；https://man7.org/linux/man-pages/man2/recv.2.html
                 break;
             }
-        } 
+        }
         return static_cast<int>(sum);
     }
 
