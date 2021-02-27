@@ -14,11 +14,13 @@ using namespace std;
 // aof.c 1676行描述到close/rename时可能出现阻塞；但就实验结果来看貌似并没有
 // 可以使用lsof查看进程打开的文件
 
+// newfd.cpp中打开文件，test.cpp就不是最后一次引用了 
+
 int main(){
-    //int oldfd = open("test.cpp",O_WRONLY|O_APPEND);
+    int oldfd = open("test.cpp",O_WRONLY|O_APPEND);
     auto start = std::chrono::high_resolution_clock::now(); 
 
-    for (size_t i = 0; i < 100000; i++){
+    for (size_t i = 0; i < 1000000; i++){
         int newfd = open("test.cpp",O_WRONLY|O_APPEND);
     //sleep(1);
         close(newfd);
@@ -29,6 +31,6 @@ int main(){
     std::chrono::duration<double, std::ratio<1,1000>> time_span 
     = std::chrono::duration_cast<std::chrono::duration<double, std::ratio<1,1000>>>(end - start);
 
-    //close(oldfd);
+    close(oldfd);
     std::cout << time_span.count() << std::endl;
 }
