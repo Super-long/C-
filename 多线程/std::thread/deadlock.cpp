@@ -37,12 +37,13 @@ void test_swap(){
 }
 
 int main(){
-    auto T = std::thread(test_swap);
-    swap(two, two);
-    T.join();
+    auto T1 = std::thread(test_swap);
+    auto T2 = std::thread(test_swap);
+    cout << "end: " << one.show() << endl;
+    T1.join();
+    T2.join();
     getchar();
     cout << "one : " << one.show() << endl;
     cout << "two : " << two.show() << endl;
     return 0;
-    string
 }
