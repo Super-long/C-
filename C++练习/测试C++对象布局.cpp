@@ -18,6 +18,7 @@ int main() {
     std::cout << "sizeof(A): " << sizeof(A) << std::endl;
     std::cout << "sizeof(D): " << sizeof(D) << std::endl;
     D* d = new D();
+    A* aa = new A();
     std::cout << d << std::endl;
     A* a = d;
     std::cout << a << std::endl;
